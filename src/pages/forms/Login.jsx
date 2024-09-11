@@ -5,8 +5,7 @@ import { Link, useNavigate } from 'react-router-dom';
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Assuming you're using `useNavigate` from React Router
-
+  const navigate = useNavigate();
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -27,8 +26,8 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-900">
-      <form onSubmit={handleSubmit} className="bg-gray-800 p-8 rounded-lg shadow-md w-96">
+    <div className="flex justify-center items-center h-screen bg-black">
+      <form onSubmit={handleSubmit} className="bg-black p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl text-white mb-6 text-center">Login</h2>
 
         <input
@@ -37,7 +36,7 @@ const Login = () => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
           required
         />
 
@@ -47,14 +46,14 @@ const Login = () => {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
           required
         />
 
         <button 
           type="submit" 
           className={`w-full p-3 rounded-lg text-white font-semibold transition duration-300 ease-in-out transform hover:scale-105 ${
-            loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
+            loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-black hover:bg-white hover:text-black'
           }`}
           disabled={loading}
         >
@@ -63,10 +62,10 @@ const Login = () => {
 
         <div className="text-center mt-6">
           <div className="relative flex items-center justify-center my-4">
-            <span className="absolute inset-x-0 bg-gray-300 h-px"></span>
-            <span className="relative px-4 bg-gray-800 text-gray-300">OR</span>
+            <span className="absolute inset-x-0 bg-white h-px"></span>
+            <span className="relative px-4 bg-black text-white">OR</span>
           </div>
-          <Link to="/signup" className="text-green-500 hover:text-green-600 font-medium transition duration-300 ease-in-out">
+          <Link to="/signup" className="text-white hover:text-gray-500 font-medium transition duration-300 ease-in-out">
             Create an Account
           </Link>
         </div>

@@ -3,6 +3,85 @@
 @tailwind utilities;
 
 
+
+
+/* ///
+froala
+/// */
+
+
+.custom-container {
+  background-color: #1e1e1e;
+}
+
+
+.custom-form {
+  background-color: #2c2c2c;
+  color: #f1f1f1;
+}
+
+
+.custom-input {
+  font-size: 20px;
+  background-color: #3a3a3a;
+  color: #f1f1f1;
+  border: 1px solid #555;
+}
+
+
+.custom-button {
+  background-color: #5a5a5a;
+  color: #f1f1f1;
+  border: none;
+}
+
+.custom-button:hover {
+  background-color: #707070;
+}
+
+
+.custom-text {
+  color: #ffffff;
+}
+
+.custom-text-light {
+  color: #ffffff;
+}
+
+
+
+
+.editor-custom-bg .fr-placeholder {
+  color: rgba(255, 255, 255, 0.7); 
+}
+
+
+.editor-custom-bg .fr-toolbar {
+  background-color: #1e1e1e; 
+  border: none;
+  border-radius: 0; 
+}
+
+
+.editor-custom-bg .fr-toolbar .fr-command {
+  color: #ffffff; 
+}
+
+
+.editor-custom-bg .fr-wrapper {
+  border: none; 
+}
+
+
+.editor-custom-bg .fr-view {
+  font-size: 20px;
+  text-size-adjust: 20px;
+  padding: 0;
+  margin: 0;
+}
+
+
+
 /* body {
   background-color: #262626;
   margin: 0;

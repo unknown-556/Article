@@ -3,12 +3,11 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
 const Signup = () => {
-  const navigate = useNavigate(); // Initialize useNavigate
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
-  const [passwordsMatch, setPasswordsMatch] = useState(true); // Password match state
-  const [loading, setLoading] = useState(false); // Loading state
+  const [passwordsMatch, setPasswordsMatch] = useState(true);
+  const [loading, setLoading] = useState(false);
 
-  // Move capitalize function outside handleChange
   const capitalizeFirstLetter = (string) => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
@@ -36,7 +35,7 @@ const Signup = () => {
         const res = await axios.post('/api/signup', formattedData);
         localStorage.setItem('token', res.data.token);
         alert('Signup successful!');
-        navigate('/login'); // Navigate to login after successful signup
+        navigate('/login'); 
       } catch (error) {
         console.error('Error signing up:', error.response.data.message);
       } finally {
@@ -46,8 +45,8 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-gray-900">
-      <form onSubmit={handleSubmit} className="bg-gray-800 p-8 rounded-lg shadow-md w-96">
+    <div className="flex justify-center items-center h-screen bg-black ">
+      <form onSubmit={handleSubmit} className="bg-black p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl text-white mb-6 text-center">Sign Up</h2>
 
         <input
@@ -56,7 +55,7 @@ const Signup = () => {
           placeholder="First Name"
           value={formData.firstName}
           onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none"
+          className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
           required
         />
         <input
@@ -65,7 +64,7 @@ const Signup = () => {
           placeholder="Last Name"
           value={formData.lastName}
           onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none"
+          className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
           required
         />
         <input
@@ -74,7 +73,7 @@ const Signup = () => {
           placeholder="Email"
           value={formData.email}
           onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none"
+          className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
           required
         />
         <input
@@ -83,7 +82,7 @@ const Signup = () => {
           placeholder="Password"
           value={formData.password}
           onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none"
+          className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
           required
         />
         <input
@@ -92,21 +91,21 @@ const Signup = () => {
           placeholder="Confirm Password"
           value={formData.confirmPassword}
           onChange={handleChange}
-          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none"
+          className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
           required
         />
 
         {!passwordsMatch && <p className="text-red-500 mb-4">Passwords do not match</p>}
 
-        <button type="submit" className="w-full bg-green-500 hover:bg-green-600 p-3 rounded-lg text-white">
+        <button type="submit" className="w-full bg-black hover:bg-white p-3 hover:text-black rounded-lg text-white">
           {loading ? 'Signing up...' : 'Sign Up'}
         </button>
         <div className="text-center mt-6">
           <div className="relative flex items-center justify-center my-4">
-            <span className="absolute inset-x-0 bg-gray-300 h-px"></span>
-            <span className="relative px-4 bg-gray-800 text-gray-300">OR</span>
+            <span className="absolute inset-x-0 bg-white h-px"></span>
+            <span className="relative px-4 bg-black text-white">OR</span>
           </div>
-          <Link to="/Login" className="text-green-500 hover:text-green-600 font-medium transition duration-300 ease-in-out">
+          <Link to="/Login" className="text-white hover:text-gray-500 font-medium transition duration-300 ease-in-out">
             Login
           </Link>
         </div>
