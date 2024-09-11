@@ -1,124 +1,78 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import axios from 'axios';
 import { Link, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Eye, EyeOff, Lock, Mail } from 'lucide-react';
-import ModalOverlay from '../../components/ModalOverlay';
 
 const Login = () => {
-  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({ email: '', password: '' });
-  const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
-  const [modalMessage, setModalMessage] = useState('');
-  const [modalType, setModalType] = useState('');
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate(); // Assuming you're using `useNavigate` from React Router
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target;
-    setFormData({
-      ...formData,
-      [name]: type === 'checkbox' ? checked : value,
-    });
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
   const handleSubmit = async (e) => {
-    setLoading(true);
     e.preventDefault();
-    console.log(formData);
-
+    setLoading(true);
     try {
-      const response = await fetch('https://connect-i645.onrender.com/api/connect/auth/login', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
-      });
-
-      setLoading(false);
-      const data = await response.json();
-      console.log('Response from API:', data);
-
-      if (response.ok) {
-        setModalMessage('LOGGED IN SUCCESSFULLY');
-        setModalType('success');
-        setModalOpen(true);
-
-        localStorage.setItem('accessToken', data.accessToken);
-        setTimeout(() => navigate('/Community'), 3000);
-      } else {
-        setModalMessage('FAILED TO LOGIN. CHECK YOUR LOGIN DETAILS AND TRY AGAIN');
-        setModalType('error');
-        setModalOpen(true);
-        setTimeout(() => setModalOpen(false), 3000);
-      }
+      const res = await axios.post('/api/login', formData);
+      localStorage.setItem('token', res.data.token);
+      alert('Login successful!');
+      navigate('/home');
     } catch (error) {
+      console.error('Error logging in:', error.response?.data?.message || 'Login failed');
+    } finally {
       setLoading(false);
-      console.error('Error submitting form:', error);
-      setModalMessage('Something went wrong');
-      setModalType('error');
-      setModalOpen(true);
     }
   };
 
   return (
-    <div id="webcrumbs"> 
-      <div className="w-[400px] bg-black rounded-lg shadow-lg text-white p-6">
-        <h1 className="font-title text-center text-2xl mb-6">Login</h1>
-        <form className="space-y-4" onSubmit={handleSubmit}>
-          <div className="flex flex-col">
-            <label htmlFor="email" className="mb-2">Email</label>
-            <input
-              type="email"
-              id="email"
-              name="email"
-              value={formData.email}
-              onChange={handleChange}
-              className="p-2 rounded-md bg-gray-200 text-black"
-              required
-            />
-          </div>
-          <div className="flex flex-col relative">
-            <label htmlFor="password" className="mb-2">Password</label>
-            <input
-              type={showPassword ? 'text' : 'password'}
-              id="password"
-              name="password"
-              value={formData.password}
-              onChange={handleChange}
-              className="p-2 rounded-md bg-gray-200 text-black pr-10"
-              required
-            />
-            <span
-              className="absolute inset-y-0 right-3 flex items-center cursor-pointer"
-              onClick={() => setShowPassword(!showPassword)}
-            >
-              {formData.password ? (
-                showPassword ? <EyeOff /> : <Eye />
-              ) : (
-                <Lock />
-              )}
-            </span>
-          </div>
-          <button type="submit" className="w-full py-2 bg-primary text-white rounded-full mt-4" disabled={loading}>
-            {loading ? 'Logging In...' : 'Log In'}
-          </button>
-        </form>
+    <div className="flex justify-center items-center h-screen bg-gray-900">
+      <form onSubmit={handleSubmit} className="bg-gray-800 p-8 rounded-lg shadow-md w-96">
+        <h2 className="text-2xl text-white mb-6 text-center">Login</h2>
 
-        <div className="form-actions mt-4">
-          <Link to="/Email" className="forgot-password">
-            Forgot password?
+        <input
+          type="email"
+          name="email"
+          placeholder="Email"
+          value={formData.email}
+          onChange={handleChange}
+          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          required
+        />
+
+        <input
+          type="password"
+          name="password"
+          placeholder="Password"
+          value={formData.password}
+          onChange={handleChange}
+          className="w-full p-3 mb-4 bg-gray-700 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+          required
+        />
+
+        <button 
+          type="submit" 
+          className={`w-full p-3 rounded-lg text-white font-semibold transition duration-300 ease-in-out transform hover:scale-105 ${
+            loading ? 'bg-gray-600 cursor-not-allowed' : 'bg-green-500 hover:bg-green-600'
+          }`}
+          disabled={loading}
+        >
+          {loading ? 'Logging in...' : 'Login'}
+        </button>
+
+        <div className="text-center mt-6">
+          <div className="relative flex items-center justify-center my-4">
+            <span className="absolute inset-x-0 bg-gray-300 h-px"></span>
+            <span className="relative px-4 bg-gray-800 text-gray-300">OR</span>
+          </div>
+          <Link to="/signup" className="text-green-500 hover:text-green-600 font-medium transition duration-300 ease-in-out">
+            Create an Account
           </Link>
         </div>
-
-        <div className="form-actions mt-4">
-          <Link to="/signup">
-            <button type="button" className="signup-btn">Sign Up</button>
-          </Link>
-        </div>
-      </div>
-      
-      <ModalOverlay isOpen={modalOpen} message={modalMessage} type={modalType} />
+      </form>
     </div>
   );
-  
 };
 
 export default Login;
