@@ -33,8 +33,8 @@ const Navbar = ({ onSearch }) => {
   return (
     <nav className="bg-black text-white p-3 flex items-center justify-between pl-5 sm:p-4 md:p-5 lg:p-6 w-full">
       {/* Logo */}
-      <div className="flex items-center h-10 w-10  ">
-        <Link to="/" className="text-2xl font-bold">
+      <div className="flex items-center  pl-5 ">
+        <Link to="/" className="text-2xl font-bold h-10 w-10 ">
           <img src="/letterform.png" alt="" />
         </Link>
       </div>
@@ -42,12 +42,13 @@ const Navbar = ({ onSearch }) => {
       {/* Search Bar (visible on all screens) */}
       <div className="flex-grow mx-4 lg:pl-5">
         <input
-          type="text"
-          placeholder="Search..."
-          className="w-full lg:w-60 p-2 rounded-2xl bg-gray-900 text-white focus:outline-none"
-          onChange={(e) => onSearch(e.target.value)}
+            type="text"
+            placeholder="Search..."
+            className="w-full lg:w-60 p-2 rounded-2xl bg-gray-900 text-white focus:outline-none focus:ring-1 focus:ring-white transition-all duration-300 ease-in-out lg:focus:w-full"
+            onChange={(e) => onSearch(e.target.value)}
         />
-      </div>
+        </div>
+
 
 
 

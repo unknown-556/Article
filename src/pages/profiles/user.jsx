@@ -57,7 +57,10 @@ const ProfilePage = () => {
 
   return (
     <div>
-      <Navbar onSearch={handleSearch} />
+      <nav className='bg-black text-white p-1 border-b border-gray-600'>
+      <Navbar onSearch={handleSearch}  />
+      </nav>
+
       <div className="flex flex-col h-screen">
         {/* Toggle Button for Mobile View */}
         <div className="lg:hidden p-4 bg-black text-white">
