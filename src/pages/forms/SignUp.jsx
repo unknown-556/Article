@@ -4,7 +4,7 @@ import axios from 'axios';
 
 const Signup = () => {
   const navigate = useNavigate();
-  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', password: '', confirmPassword: '' });
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', username: '', password: '', confirmPassword: '' });
   const [passwordsMatch, setPasswordsMatch] = useState(true);
   const [loading, setLoading] = useState(false);
 
@@ -12,8 +12,17 @@ const Signup = () => {
     return string.charAt(0).toUpperCase() + string.slice(1).toLowerCase();
   };
 
+  const generateUsername = (email) => {
+    return email.includes('@gmail.com') ? email.split('@gmail.com')[0] : email.split('@')[0];
+  };
+
   const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [name]: value,
+      username: name === 'email' ? generateUsername(value) : prevFormData.username,
+    }));
   };
 
   const handleSubmit = async (e) => {
@@ -45,7 +54,8 @@ const Signup = () => {
   };
 
   return (
-    <div className="flex justify-center items-center h-screen bg-black ">
+    <div className="flex justify-center items-center h-screen bg-black">
+
       <form onSubmit={handleSubmit} className="bg-black p-8 rounded-lg shadow-md w-96">
         <h2 className="text-2xl text-white mb-6 text-center">Sign Up</h2>
 
@@ -77,6 +87,14 @@ const Signup = () => {
           required
         />
         <input
+          type="text"
+          name="username"
+          placeholder="Username"
+          value={formData.username}
+          readOnly
+          className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-white"
+        />
+        <input
           type="password"
           name="password"
           placeholder="Password"
@@ -105,15 +123,13 @@ const Signup = () => {
             <span className="absolute inset-x-0 bg-white h-px"></span>
             <span className="relative px-4 bg-black text-white">OR</span>
           </div>
-          <Link to="/Login" className="text-white hover:text-gray-500 font-medium transition duration-300 ease-in-out">
+          <Link to="/login" className="text-white hover:text-gray-500 font-medium transition duration-300 ease-in-out">
             Login
           </Link>
         </div>
       </form>
-
     </div>
   );
 };
 
 export default Signup;
-
