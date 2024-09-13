@@ -44,7 +44,7 @@ const Navbar = ({ onSearch }) => {
         <input
             type="text"
             placeholder="Search..."
-            className="w-full lg:w-60 p-2 rounded-2xl bg-gray-900 text-white focus:outline-none focus:ring-1 focus:ring-white transition-all duration-300 ease-in-out lg:focus:w-full"
+            className="w-full lg:w-60 p-2 rounded-2xl bg-gray-900 text-white focus:outline-none focus:ring-1 focus:ring-white transition-all duration-500 ease-in-out lg:focus:w-full"
             onChange={(e) => onSearch(e.target.value)}
         />
         </div>
