@@ -69,6 +69,8 @@ const AddArticle = () => {
     data.append('image', formData.image);
     data.append('categories', formData.categories.join(','));
 
+    console.log(formData)
+
     try {
       await axios.post('/api/articles', data, {
         headers: {
@@ -236,7 +238,7 @@ const AddArticle = () => {
               <button type="button" onClick={handlePreview} className="w-2/5 bg-black hover:bg-white hover:text-black p-3 hover:rounded-xl text-white">
               Preview
             </button>
-              <button type="submit" className="w-2/5 bg-black hover:bg-white hover:text-black p-3 hover:rounded-xl text-white">
+              <button type="submit" onClick={handleSubmit} className="w-2/5 bg-black hover:bg-white hover:text-black p-3 hover:rounded-xl text-white">
                 Submit
               </button>
             </div>
@@ -244,35 +246,46 @@ const AddArticle = () => {
         </div>
       )}
 
-      {previewMode && (
-        <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-80 z-50">
-          <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-lg">
-            <h2 className="text-2xl text-center mb-4">{formData.title}</h2>
-            <p className="mb-6">{formData.description}</p>
-            <img src={imagePreview} alt="Preview" className="mb-4" />
-            <FroalaEditorComponent
-              tag="textarea"
-              model={formData.content}
-              onModelChange={() => { }} // Just for display
-              config={{
-                toolbar: false,
-                placeholderText: '',
-                charCounterCount: false,
-                editorClass: 'editor-preview',
-                events: {
-                  initialized: function () {
-                    this.edit.off(); // Disable editing in preview mode
-                  }
-                }
-              }}
-            />
-            <p className="text-gray-300">Categories: {formData.categories.join(', ')}</p>
-            <button onClick={() => setPreviewMode(false)} className="bg-black text-white p-3 rounded-lg mt-4">
-              Close Preview
-            </button>
-          </div>
-        </div>
+{previewMode && (
+  <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-80 z-50 overflow-y-auto p-4">
+    <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl lg:max-w-4xl">
+      {/* Title */}
+      <h2 className="text-2xl lg:text-3xl text-center mb-4 font-semibold">{formData.title}</h2>
+
+      {/* Description */}
+      <p className="mb-6 text-gray-800 text-lg lg:text-xl">{formData.description}</p>
+
+      {/* Image Preview */}
+      {imagePreview && (
+        <img
+          src={imagePreview}
+          alt="Preview"
+          className="mb-6 max-h-96 w-full object-contain rounded-lg"
+        />
       )}
+
+      {/* Content Preview */}
+      <div
+        className="prose lg:prose-lg max-w-none text-gray-800"
+        dangerouslySetInnerHTML={{ __html: formData.content }}
+      ></div>
+
+      {/* Categories */}
+      <p className="text-gray-500 mt-6">
+        <strong>Categories:</strong> {formData.categories.join(', ')}
+      </p>
+
+      {/* Close Button */}
+      <button
+        onClick={() => setPreviewMode(false)}
+        className="bg-black text-white p-3 rounded-lg mt-4 w-full lg:w-auto lg:px-6 lg:py-3"
+      >
+        Close Preview
+      </button>
+    </div>
+  </div>
+)}
+
     </div>
   );
 };
