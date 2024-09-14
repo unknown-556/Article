@@ -13,11 +13,11 @@ const AddArticle = () => {
     categories: []
   });
 
-  const [previewMode, setPreviewMode] = useState(false); // Preview mode toggle
+  const [previewMode, setPreviewMode] = useState(false); 
   const [imagePreview, setImagePreview] = useState(null);
   const [formPart, setFormPart] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showCategories, setShowCategories] = useState(false); // Show categories toggle
+  const [showCategories, setShowCategories] = useState(false); 
 
   const categories = [
     'Technology', 'Health', 'Business', 'Science', 'Programming', 'Coding', 'Psychology', 'Marketing', 'Lifestyle', 'Books',
@@ -25,7 +25,6 @@ const AddArticle = () => {
     'Fashion', 'Entertainment', 'Culture', 'Finance', 'Nature', 'Gaming', 'Spirituality', 'Philosophy', 'Movies', 'Parenting'
   ];
 
-  // Filtered categories based on search query
   const filteredCategories = categories.filter(category =>
     category.toLowerCase().includes(searchQuery.toLowerCase())
   );
@@ -50,7 +49,6 @@ const AddArticle = () => {
     setFormData({ ...formData, content });
   };
 
-  // Toggle category selection
   const handleCategorySelect = (category) => {
     const newCategories = formData.categories.includes(category)
       ? formData.categories.filter(cat => cat !== category)
@@ -72,9 +70,10 @@ const AddArticle = () => {
     console.log(formData)
 
     try {
-      await axios.post('/api/articles', data, {
+      await axios.post('http://127.0.0.1:1234/api/article/post/create', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       alert('Article added successfully!');
@@ -97,13 +96,13 @@ const AddArticle = () => {
     document.getElementById('file-input').click();
   };
 
-  // Show categories when user starts typing
+
   const handleSearchChange = (e) => {
     setSearchQuery(e.target.value);
     setShowCategories(true);
   };
 
-  // Close category popup when clicking outside
+
   const categoryRef = useRef(null);
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -117,7 +116,6 @@ const AddArticle = () => {
     };
   }, [categoryRef]);
 
-  // Handle preview mode toggle
   const handlePreview = () => {
     setPreviewMode(!previewMode);
   };
@@ -249,13 +247,10 @@ const AddArticle = () => {
 {previewMode && (
   <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-80 z-50 overflow-y-auto p-4">
     <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-2xl lg:max-w-4xl">
-      {/* Title */}
       <h2 className="text-2xl lg:text-3xl text-center mb-4 font-semibold">{formData.title}</h2>
 
-      {/* Description */}
       <p className="mb-6 text-gray-800 text-lg lg:text-xl">{formData.description}</p>
 
-      {/* Image Preview */}
       {imagePreview && (
         <img
           src={imagePreview}
@@ -264,18 +259,15 @@ const AddArticle = () => {
         />
       )}
 
-      {/* Content Preview */}
       <div
         className="prose lg:prose-lg max-w-none text-gray-800"
         dangerouslySetInnerHTML={{ __html: formData.content }}
       ></div>
 
-      {/* Categories */}
       <p className="text-gray-500 mt-6">
         <strong>Categories:</strong> {formData.categories.join(', ')}
       </p>
 
-      {/* Close Button */}
       <button
         onClick={() => setPreviewMode(false)}
         className="bg-black text-white p-3 rounded-lg mt-4 w-full lg:w-auto lg:px-6 lg:py-3"

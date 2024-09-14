@@ -42,7 +42,7 @@ const Signup = () => {
 
       try {
         console.log(formData)
-        const res = await axios.post('/api/signup', formattedData);
+        const res = await axios.post('http://127.0.0.1:1234/api/article/auth/register', formattedData);
         localStorage.setItem('token', res.data.token);
         alert('Signup successful!');
         navigate('/login'); 

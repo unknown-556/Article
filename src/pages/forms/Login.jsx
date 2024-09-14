@@ -14,8 +14,8 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const res = await axios.post('/api/login', formData);
-      localStorage.setItem('token', res.data.token);
+      const res = await axios.post('http://127.0.0.1:1234/api/article/auth/login', formData);
+      localStorage.setItem('token', res.data.accessToken);
       alert('Login successful!');
       navigate('/home');
     } catch (error) {
