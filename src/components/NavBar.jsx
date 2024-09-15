@@ -11,7 +11,7 @@ const Navbar = ({ onSearch }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('/api/profile', {
+        const response = await axios.get('/api/article/user/profile', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

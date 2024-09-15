@@ -79,10 +79,10 @@ const ProfilePage = () => {
         </div>
 
       {/* Main Layout */}
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden ">
         {/* Sidebar */}
         <div
-          className={`lg:w-1/4 w-full sm:h-full bg-black p-6 lg:relative absolute transition-all duration-300 z-50 ${
+          className={`lg:w-1/4 w-full sm:h-full bg-black p-6 lg:relative absolute transition-all duration-300 z-50  ${
             isNavOpen ? 'left-0' : '-left-full'
           } lg:left-0`}
         >
