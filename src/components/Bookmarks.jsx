@@ -66,7 +66,7 @@ const Bookmarks = ({ onArticleClick }) => {
       </div>
 
       {/* Articles Grid */}
-      <div className="border-b border-gray-600">
+      <div className="">
         {filteredArticles.length > 0 ? (
           filteredArticles.map((article, index) => (
             <ArticleCard

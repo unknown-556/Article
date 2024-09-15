@@ -16,16 +16,16 @@ const MyArticles = ({ onArticleClick }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:1234/api/article/post/all`, {
+        const response = await axios.get(`http://127.0.0.1:1234/api/article/user/myArticles`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        const fetchedArticles = response.data?.allArticles || [];
+        const fetchedArticles = response.data?.posts || [];
         setArticles(fetchedArticles);
         setFilteredArticles(fetchedArticles);
         setLoading(false);
-      } catch (error) {
+      } catch (error) { 
         setError(error.message);
         setLoading(false);
       }
@@ -64,7 +64,7 @@ const MyArticles = ({ onArticleClick }) => {
       </div>
 
       {/* Articles Grid */}
-      <div className="border-b border-gray-600">
+      <div className="">
         {filteredArticles.length > 0 ? (
           filteredArticles.map((article, index) => (
             <ArticleCard

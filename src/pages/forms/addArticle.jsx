@@ -34,12 +34,13 @@ const AddArticle = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result);
+        setImagePreview(reader.result);  // Set the preview image
+        setFormData({ ...formData, image: reader.result });  // Save the Base64 string in formData
       };
-      reader.readAsDataURL(file);
-      setFormData({ ...formData, image: file });
+      reader.readAsDataURL(file);  // Convert image to Base64 string
     }
   };
+  
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
