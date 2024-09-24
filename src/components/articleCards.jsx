@@ -3,7 +3,7 @@ import React from 'react';
 const ArticleCard = ({ title, description, image, categories, onClick }) => {
   return (
     <div
-      className=" border-b border-gray-600 flex lg:w-full lg:h-60 flex-col md:flex-row bg-black text-white shadow-lg rounded-lg overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-xl cursor-pointer mb-8"
+      className="justify-center border-b border-gray-800 flex lg:w-3/4 lg:h-60 flex-col md:flex-row bg-black text-white shadow-lg  overflow-hidden transition-transform hover:scale-[1.02] hover:shadow-xl cursor-pointer mb-8"
       onClick={onClick}
     >
      

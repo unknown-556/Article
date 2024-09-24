@@ -52,19 +52,19 @@ const MyArticles = ({ onArticleClick }) => {
   }
 
   return (
-    <div className="container mx-auto px-4">
+    <div className="container mx-auto px-4 py-8">
       {/* Search Bar */}
-      <div className="mb-8">
+      <div className="mb-8 flex justify-center">
         <input
           type="text"
-          placeholder="Search articles..."
-          className="w-full p-3 rounded-xl bg-gray-900 focus:outline-none "
+          placeholder="Search your articles..."
+          className="w-full md:w-1/2 p-3 rounded-xl bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-gray-500"
           onChange={(e) => handleSearch(e.target.value)}
         />
       </div>
 
       {/* Articles Grid */}
-      <div className="">
+      <div className="items-center justify-center">
         {filteredArticles.length > 0 ? (
           filteredArticles.map((article, index) => (
             <ArticleCard
@@ -75,7 +75,6 @@ const MyArticles = ({ onArticleClick }) => {
               categories={article.categories}
               onClick={() => onArticleClick(article)}
             />
-            
           ))
         ) : (
           <div>No articles found matching your search.</div>

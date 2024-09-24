@@ -11,12 +11,12 @@ const Navbar = ({ onSearch }) => {
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('/api/article/user/profile', {
+        const response = await axios.get('http://127.0.0.1:1234/api/article/user/profile', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        setUser(response.data);
+        setUser(response.data.user);
       } catch (error) {
         setError('Failed to fetch user data');
       } finally {
@@ -59,7 +59,7 @@ const Navbar = ({ onSearch }) => {
           className="text-white focus:outline-none"
         >
           <img
-              src={user?.profilePicture || '/default-profile.png'}
+              src={user?.profilePic || '/default-profile.png'}
               alt="Profile"
               className="w-8 h-8 rounded-full"
             />
@@ -78,7 +78,7 @@ const Navbar = ({ onSearch }) => {
           <Link to="/profile" className="hover:text-gray-400 flex items-center py-2 lg:hidden">
             {/* Profile Picture in the Dropdown (visible only on mobile) */}
             <img
-              src={user?.profilePicture || '/default-profile.png'}
+              src={user?.profilePic|| '/default-profile.png'}
               alt="Profile"
               className="w-8 h-8 rounded-full"
             />
@@ -123,7 +123,7 @@ const Navbar = ({ onSearch }) => {
         <div className="hidden lg:block h-10 w-10">
         <Link to="/profile" className="py-2">
           <img
-            src={user?.profilePicture || '/default-profile.png'}
+            src={user?.profilePic || '/default-profile.png'}
             alt="Profile"
             className="w-10 h-10 rounded-full"
           />

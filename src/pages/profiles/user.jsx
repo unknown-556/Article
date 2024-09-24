@@ -13,6 +13,7 @@ const ProfilePage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null); // For profile pic upload
   const navigate = useNavigate();
 
   const handleLinkClick = (page) => {
@@ -29,13 +30,55 @@ const ProfilePage = () => {
     navigate('/login');
   };
 
+  const handleProfilePicClick = () => {
+    // Trigger the hidden file input
+    document.getElementById('fileInput').click();
+  };
+
+  const handleFileChange = async (event) => {
+    const file = event.target.files[0];
+    if (file) {
+      setSelectedFile(file);
+      const reader = new FileReader();
+
+      reader.onloadend = async () => {
+        const base64String = reader.result;
+
+        try {
+          const response = await axios.put('http://127.0.0.1:1234/api/article/user/update', {
+            profilePic: base64String, // Send base64 string to the server
+          }, {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem('token')}`,
+            },
+          });
+
+          // Update user profile with the new picture
+          setUser((prevUser) => ({
+            ...prevUser,
+            profilePic: response.data.profilePic,
+          }));
+        } catch (error) {
+          console.error('Failed to upload profile picture:', error);
+          setError('Failed to update profile picture');
+        }
+      };
+
+      reader.readAsDataURL(file); // Convert the file to base64
+      console.log(file)
+    }
+  };
+
   useEffect(() => {
     const fetchUserData = async () => {
       try {
-        const response = await axios.get('/api/profile', {
+        const response = await axios.get('http://127.0.0.1:1234/api/article/user/profile', {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
-        setUser(response.data);
+        setUser(response.data.user);
+        console.log(response.data);
+        const user = response.data
+        console.log(user)
       } catch (error) {
         setError('Failed to fetch user data');
       } finally {
@@ -51,19 +94,19 @@ const ProfilePage = () => {
   return (
     <div className="h-screen flex flex-col bg-black text-white">
       {/* Navbar */}
-      <nav className="bg-black text-white p-1 border-b border-gray-600">
+      <nav className="bg-black text-white p-1 border-b border-gray-900">
         <Navbar onSearch={handleSearch} />
       </nav>
 
-       {/* Toggle Button for Mobile View */}
-       <div className="lg:hidden p-4 bg-black text-white">
-          <button
-            onClick={() => setIsNavOpen(!isNavOpen)}
-            className="text-white bg-black p-2 rounded-md"
-          >
-            <svg
+      {/* Toggle Button for Mobile View */}
+      <div className="lg:hidden p-4 bg-black text-white">
+        <button
+          onClick={() => setIsNavOpen(!isNavOpen)}
+          className="text-white bg-black p-2 rounded-md"
+        >
+          <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8 "
+            className="h-8 w-8"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -75,50 +118,37 @@ const ProfilePage = () => {
               d={isNavOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}
             />
           </svg>
-          </button>
-        </div>
+        </button>
+      </div>
 
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden ">
         {/* Sidebar */}
         <div
-          className={`lg:w-1/4 w-full sm:h-full bg-black p-6 lg:relative absolute transition-all duration-300 z-50  ${
+          className={`lg:w-1/4 w-full sm:h-full bg-black p-6 lg:relative absolute transition-all duration-300 z-50 border-r border-gray-900  ${
             isNavOpen ? 'left-0' : '-left-full'
           } lg:left-0`}
         >
-          {/* Toggle Button for Mobile View
-          <div className="lg:hidden p-4 bg-black text-white">
-            <button
-              onClick={() => setIsNavOpen(!isNavOpen)}
-              className="text-white bg-black p-2 rounded-md"
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-8 w-8 "
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d={isNavOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}
-                />
-              </svg>
-            </button>
-          </div> */}
-
           {/* User Profile Section */}
           {user && (
             <div className="text-center mb-8">
               <img
-                src={user.profilePicture || '/default-profile.png'}
+                src={user.profilePic || '/default-profile.png'}
                 alt="Profile"
-                className="w-24 h-24 rounded-full mx-auto mb-4"
+                className="w-24 h-24 rounded-full mx-auto mb-4 cursor-pointer"
+                onClick={handleProfilePicClick} // On profile pic click
               />
-              <h2 className="text-xl font-semibold">{user.name}</h2>
+              <h2 className="text-xl font-semibold">{user.firstName} {user.lastName}</h2>
               <p className="text-gray-400">{user.email}</p>
+
+              {/* Hidden file input for profile pic upload */}
+              <input
+                id="fileInput"
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleFileChange}
+              />
             </div>
           )}
 
@@ -168,13 +198,15 @@ const ProfilePage = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 p-8 overflow-y-auto">
-          <h1 className="text-2xl font-bold mb-6">{activePage}</h1>
+        <div className=" mx-auto flex-col  flex-1 overflow-y-auto items-center justify-center">
+          <div className ="flex flex -col items -center justify  -center">
+          <h1 className=" text-black text-2xl font-bold mb-6">{activePage}</h1>
 
           {/* Render active content based on selected page */}
           {activePage === 'MyArticles' && <MyArticles />}
           {activePage === 'Bookmarks' && <Bookmarks />}
           {activePage === 'Library' && <Library />}
+        </div>
         </div>
       </div>
     </div>
