@@ -1,4 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import FroalaEditorComponent from 'react-froala-wysiwyg';
@@ -79,6 +80,7 @@ const AddArticle = () => {
       });
       alert('Article added successfully!');
       setFormData({ title: '', description: '', content: '', image: '', categories: [] });
+      navigate('/profile');
       setImagePreview(null);
     } catch (error) {
       console.error('Error adding article:', error.response?.data?.message || error.message);

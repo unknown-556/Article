@@ -1,4 +1,3 @@
-// ProfilePage.jsx
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -65,7 +64,6 @@ const ProfilePage = () => {
       };
 
       reader.readAsDataURL(file); // Convert the file to base64
-      console.log(file)
     }
   };
 
@@ -76,9 +74,6 @@ const ProfilePage = () => {
           headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
         });
         setUser(response.data.user);
-        console.log(response.data);
-        const user = response.data
-        console.log(user)
       } catch (error) {
         setError('Failed to fetch user data');
       } finally {
@@ -98,36 +93,30 @@ const ProfilePage = () => {
         <Navbar onSearch={handleSearch} />
       </nav>
 
-      {/* Toggle Button for Mobile View */}
+      {/* Hamburger Icon for Mobile View */}
       <div className="lg:hidden p-4 bg-black text-white">
-        <button
+        <svg
           onClick={() => setIsNavOpen(!isNavOpen)}
-          className="text-white bg-black p-2 rounded-md"
+          xmlns="http://www.w3.org/2000/svg"
+          className="h-8 w-8 cursor-pointer"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-8 w-8"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d={isNavOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}
-            />
-          </svg>
-        </button>
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d={isNavOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16m-7 6h7"}
+          />
+        </svg>
       </div>
 
       {/* Main Layout */}
-      <div className="flex flex-1 overflow-hidden ">
+      <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         <div
-          className={`lg:w-1/4 w-full sm:h-full bg-black p-6 lg:relative absolute transition-all duration-300 z-50 border-r border-gray-900  ${
-            isNavOpen ? 'left-0' : '-left-full'
-          } lg:left-0`}
+          className={`lg:w-1/4 w-full sm:h-full bg-black p-6 lg:relative absolute transition-all duration-300 z-50 border-r border-gray-900 ${isNavOpen ? 'left-0' : '-left-full'} lg:left-0`}
         >
           {/* User Profile Section */}
           {user && (
@@ -157,9 +146,7 @@ const ProfilePage = () => {
             <li>
               <button
                 onClick={() => handleLinkClick('MyArticles')}
-                className={`w-full block text-left p-3 rounded-lg transition duration-300 ${
-                  activePage === 'MyArticles' ? 'focus:ring-2 focus:ring-white' : 'bg-black hover:ring-1 hover:ring-white'
-                }`}
+                className={`w-full block text-left p-3 rounded-lg transition duration-300 ${activePage === 'MyArticles' ? 'focus:ring-2 focus:ring-white' : 'bg-black hover:ring-1 hover:ring-white'}`}
               >
                 My Articles
               </button>
@@ -167,9 +154,7 @@ const ProfilePage = () => {
             <li>
               <button
                 onClick={() => handleLinkClick('Bookmarks')}
-                className={`w-full block text-left p-3 rounded-lg transition duration-300 ${
-                  activePage === 'Bookmarks' ? 'focus:ring-2 focus:ring-white' : 'bg-black hover:ring-1 hover:ring-white'
-                }`}
+                className={`w-full block text-left p-3 rounded-lg transition duration-300 ${activePage === 'Bookmarks' ? 'focus:ring-2 focus:ring-white' : 'bg-black hover:ring-1 hover:ring-white'}`}
               >
                 Bookmarks
               </button>
@@ -177,9 +162,7 @@ const ProfilePage = () => {
             <li>
               <button
                 onClick={() => handleLinkClick('Library')}
-                className={`w-full block text-left p-3 rounded-lg transition duration-300 ${
-                  activePage === 'Library' ? 'focus:ring-2 focus:ring-white' : 'bg-black hover:ring-1 hover:ring-white'
-                }`}
+                className={`w-full block text-left p-3 rounded-lg transition duration-300 ${activePage === 'Library' ? 'focus:ring-2 focus:ring-white' : 'bg-black hover:ring-1 hover:ring-white'}`}
               >
                 My Library
               </button>
@@ -198,15 +181,13 @@ const ProfilePage = () => {
         </div>
 
         {/* Main Content Area */}
-        <div className=" mx-auto flex-col  flex-1 overflow-y-auto items-center justify-center">
-          <div className ="flex flex -col items -center justify  -center">
-          <h1 className=" text-black text-2xl font-bold mb-6">{activePage}</h1>
+        <div className="mx-auto flex-col flex-1 overflow-y-auto items-center justify-center">
+          <h1 className="text-black text-2xl font-bold mb-6">{activePage}</h1>
 
           {/* Render active content based on selected page */}
           {activePage === 'MyArticles' && <MyArticles />}
           {activePage === 'Bookmarks' && <Bookmarks />}
           {activePage === 'Library' && <Library />}
-        </div>
         </div>
       </div>
     </div>

@@ -1,31 +1,39 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import ArticleCard from './articleCards';
 
-const MyArticles = ({ onArticleClick }) => {
+const MyArticles = () => {
   const [articles, setArticles] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
+  const navigate = useNavigate(); // Initialize the navigate hook
+
   const handleSearch = (query) => {
     setSearchQuery(query);
+  };
+
+  const handleArticleClick = (article) => {
+    navigate(`/articles/${article._id}`); // Navigate to the article viewing page with the article id
   };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`http://127.0.0.1:1234/api/article/user/myArticles`, {
+        const response = await axios.get('http://127.0.0.1:1234/api/article/user/myArticles', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         const fetchedArticles = response.data?.posts || [];
+        console.log(fetchedArticles)
         setArticles(fetchedArticles);
         setFilteredArticles(fetchedArticles);
         setLoading(false);
-      } catch (error) { 
+      } catch (error) {
         setError(error.message);
         setLoading(false);
       }
@@ -73,7 +81,7 @@ const MyArticles = ({ onArticleClick }) => {
               description={article.description}
               image={article.image}
               categories={article.categories}
-              onClick={() => onArticleClick(article)}
+              onClick={() => handleArticleClick(article)} // Attach the onClick event to handle navigation
             />
           ))
         ) : (
