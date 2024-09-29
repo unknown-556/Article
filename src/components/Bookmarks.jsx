@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import ArticleCard from './articleCards';
-
+import { useNavigate } from 'react-router-dom';
 
 
 
@@ -11,6 +11,7 @@ const Bookmarks = ({ onArticleClick }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
+  const navigate = useNavigate();
 
   const handleSearch = (query) => {
     setSearchQuery(query);
@@ -35,6 +36,10 @@ const Bookmarks = ({ onArticleClick }) => {
     };
     fetchData();
   }, []);
+
+  const handleArticleClick = (articles) => {
+    navigate(`/articles/${articles._id}`);
+  };
 
   useEffect(() => {
     if (articles && articles.length > 0) {
@@ -75,7 +80,7 @@ const Bookmarks = ({ onArticleClick }) => {
               description={article.description}
               image={article.image}
               categories={article.categories}
-              onClick={() => onArticleClick(article)}
+              onClick={() => handleArticleClick(article)}
             />
             
           ))

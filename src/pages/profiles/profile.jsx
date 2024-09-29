@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import Navbar from '../../components/NavBar';
 import ArticleCard from '../../components/articleCards';
 
@@ -14,24 +14,28 @@ const UserProfilePage = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileVisible, setIsProfileVisible] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false); // Track if the author is followed
+  const [isFollowing, setIsFollowing] = useState(false);
 
+  // Fetch user data and articles
   useEffect(() => {
     const fetchUserData = async () => {
       setLoading(true); 
       try {
+        // Fetch the profile user data
         const userResponse = await axios.get(`http://127.0.0.1:1234/api/article/user/user/${userId}`);
         const userData = userResponse.data.user;
         setUser(userData);
 
-        // Check if the current user is following the author
-        const currentUser = await axios.get(`http://127.0.0.1:1234/api/article/user/profile`, {
+        // Fetch current logged-in user profile to check following status
+        const currentUserResponse = await axios.get(`http://127.0.0.1:1234/api/article/user/profile`, {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
-        setIsFollowing(currentUser.data.user.following.includes(userData._id)); // Check if the user is in the following list
+        const currentUser = currentUserResponse.data.user;
+        setIsFollowing(currentUser.following.includes(userData._id)); 
 
+        // Fetch articles by the profile user
         const articlesResponse = await axios.get(`http://127.0.0.1:1234/api/article/post/article/${userId}`);
         const articlesData = articlesResponse.data.posts || [];
         setArticles(articlesData);
@@ -47,10 +51,12 @@ const UserProfilePage = () => {
     fetchUserData();
   }, [userId]);
 
+  // Handle article click to navigate to ArticleView
   const handleArticleClick = (article) => {
     navigate(`/articles/${article._id}`); 
   };
 
+  // Filter articles based on search query
   useEffect(() => {
     if (articles.length > 0) {
       const filtered = articles.filter((article) =>
@@ -71,9 +77,10 @@ const UserProfilePage = () => {
     setIsProfileVisible(!isProfileVisible);
   };
 
+  // Handle following the author
   const followAuthor = async () => {
     try {
-      const response = await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${user._id}`, {}, {
+      await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${user._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -82,12 +89,14 @@ const UserProfilePage = () => {
       alert('Successfully followed the author!');
     } catch (error) {
       console.error('Error following:', error);
+      alert('Failed to follow the author.');
     }
   };
 
+  // Handle unfollowing the author
   const unfollowAuthor = async () => {
     try {
-      const response = await axios.post(`http://127.0.0.1:1234/api/article/user/unfollow/${user._id}`, {}, {
+      await axios.post(`http://127.0.0.1:1234/api/article/user/unfollow/${user._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -96,6 +105,7 @@ const UserProfilePage = () => {
       alert('Successfully unfollowed the author!');
     } catch (error) {
       console.error('Error unfollowing:', error);
+      alert('Failed to unfollow the author.');
     }
   };
 
@@ -109,7 +119,7 @@ const UserProfilePage = () => {
         <Navbar />
       </nav>
 
-      {/* Hamburger Icon for Profile Toggle */}
+      {/* Hamburger Icon for Profile Toggle (Mobile) */}
       <div className="lg:hidden flex justify-start p-4">
         <svg 
           onClick={toggleProfileVisibility} 
@@ -142,7 +152,7 @@ const UserProfilePage = () => {
               <p className="text-gray-400">Following: {user.following?.length || 0}</p>
               <button
                 onClick={isFollowing ? unfollowAuthor : followAuthor}
-                className={`mt-4 px-4 py-2 rounded-lg ${isFollowing ? 'bg-red-600' : 'bg-blue-600'}`}
+                className={`mt-4 px-4 py-2 rounded-lg ${isFollowing ? 'bg-red-600 hover:bg-red-500' : 'bg-blue-600 hover:bg-blue-500'} text-white transition duration-150`}
               >
                 {isFollowing ? 'Unfollow' : 'Follow'}
               </button>
@@ -165,16 +175,16 @@ const UserProfilePage = () => {
           </div>
 
           {/* Articles Grid */}
-          <div className="items-center justify-center">
+          <div className="grid gap-6">
             {filteredArticles.length > 0 ? (
-              filteredArticles.map((article) => (
+              filteredArticles.map((articleItem) => (
                 <ArticleCard
-                  key={article._id}
-                  title={article.title}
-                  description={article.description}
-                  image={article.image}
-                  categories={article.categories}
-                  onClick={() => handleArticleClick(article)}
+                  key={articleItem._id}
+                  title={articleItem.title}
+                  description={articleItem.description}
+                  image={articleItem.image}
+                  categories={articleItem.categories}
+                  onClick={() => handleArticleClick(articleItem)}
                 />
               ))
             ) : (

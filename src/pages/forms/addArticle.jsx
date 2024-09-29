@@ -167,7 +167,7 @@ const AddArticle = () => {
 
           {/* Display Selected Categories */}
           {formData.categories.length > 0 && (
-            <div className="flex flex-wrap gap-2 mb-4">
+            <div className="flex flex-wrap gap-2 mb-4 ">
               {formData.categories.map((selectedCategory, index) => (
                 <span
                   key={index}
@@ -228,7 +228,7 @@ const AddArticle = () => {
           <input type="file" id="file-input" style={{ display: 'none' }} onChange={handleImageUpload} />
           {imagePreview && (
             <div className="w-full flex justify-center mt-4">
-              <img src={imagePreview} alt="Image preview" className="max-w-full h-auto rounded-lg shadow-md" />
+              <img src={imagePreview} alt="Image preview" className="w-3/4 h-1/3 rounded-lg shadow-md" />
             </div>
           )}
 

@@ -10,14 +10,14 @@ const MyArticles = () => {
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
 
-  const navigate = useNavigate(); // Initialize the navigate hook
+  const navigate = useNavigate(); 
 
   const handleSearch = (query) => {
     setSearchQuery(query);
   };
 
   const handleArticleClick = (article) => {
-    navigate(`/articles/${article._id}`); // Navigate to the article viewing page with the article id
+    navigate(`/articles/${article._id}`);
   };
 
   useEffect(() => {
@@ -81,7 +81,7 @@ const MyArticles = () => {
               description={article.description}
               image={article.image}
               categories={article.categories}
-              onClick={() => handleArticleClick(article)} // Attach the onClick event to handle navigation
+              onClick={() => handleArticleClick(article)}
             />
           ))
         ) : (
