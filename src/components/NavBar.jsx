@@ -31,9 +31,9 @@ const Navbar = ({ onSearch }) => {
   if (error) return <p>{error}</p>;
 
   return (
-    <nav className="bg-black text-white p-2 flex items-center justify-between pl-5 sm:p-4 md:p-5 lg:p-6 w-full">
+    <nav className="bg-black text-white p-2 flex items-center justify-between lg:pt-0  pl-1 sm:p-4 md:p-5 lg:p-2 w-full">
       {/* Logo */}
-      <div className="flex items-center  pl-5 ">
+      <div className="flex items-center  lg:pl-2 ">
         <Link to="/" className="text-2xl font-bold h-10 w-10 ">
           <img src="/letterform.png" alt="" />
         </Link>

@@ -35,10 +35,10 @@ const AddArticle = () => {
     if (file) {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result);  // Set the preview image
-        setFormData({ ...formData, image: reader.result });  // Save the Base64 string in formData
+        setImagePreview(reader.result);  
+        setFormData({ ...formData, image: reader.result });  
       };
-      reader.readAsDataURL(file);  // Convert image to Base64 string
+      reader.readAsDataURL(file);  
     }
   };
   
@@ -52,12 +52,21 @@ const AddArticle = () => {
   };
 
   const handleCategorySelect = (category) => {
-    const newCategories = formData.categories.includes(category)
-      ? formData.categories.filter(cat => cat !== category)
-      : [...formData.categories, category];
-
-    setFormData({ ...formData, categories: newCategories });
+    if (formData.categories.includes(category)) {
+      // Remove the category if it's already selected
+      setFormData({
+        ...formData,
+        categories: formData.categories.filter(c => c !== category),
+      });
+    } else {
+      // Add the category if it's not already selected
+      setFormData({
+        ...formData,
+        categories: [...formData.categories, category],
+      });
+    }
   };
+  
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -67,7 +76,9 @@ const AddArticle = () => {
     data.append('description', formData.description);
     data.append('content', formData.content);
     data.append('image', formData.image);
-    data.append('categories', formData.categories.join(','));
+    formData.categories.forEach((category) => {
+      data.append('categories[]', category); 
+    });
 
     console.log(formData)
 
@@ -154,11 +165,25 @@ const AddArticle = () => {
             className="w-full p-3 mb-4 bg-black text-white rounded-lg focus:outline-none"
           />
 
+          {/* Display Selected Categories */}
+          {formData.categories.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-4">
+              {formData.categories.map((selectedCategory, index) => (
+                <span
+                  key={index}
+                  className="px-3 py-1 rounded-full bg-blue-600 text-white text-sm font-medium"
+                >
+                  {selectedCategory}
+                </span>
+              ))}
+            </div>
+          )}
+
           {/* Category Selection Popup */}
           {showCategories && (
             <div
               ref={categoryRef}
-              className="absolute z-10 bg-gray-800 rounded-lg p-4 mt-1 max-h-48 overflow-y-scroll overflow-y-scroll"
+              className="absolute z-10 bg-gray-800 rounded-lg p-4 mt-1 max-h-48 overflow-y-scroll"
             >
               {filteredCategories.length > 0 ? (
                 filteredCategories.map(category => (
@@ -178,6 +203,7 @@ const AddArticle = () => {
               )}
             </div>
           )}
+
 
           <div className="flex justify-between">
             <button type="button" onClick={handleNext} className="w-2/5 bg-black hover:bg-white hover:text-black p-3 hover:rounded-xl text-white">

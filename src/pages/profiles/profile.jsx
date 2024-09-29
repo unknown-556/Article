@@ -1,28 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/NavBar';
 import ArticleCard from '../../components/articleCards';
 
 const UserProfilePage = () => {
-  const { userId } = useParams(); // Capture user ID from the URL
+  const { userId } = useParams(); 
+  const navigate = useNavigate(); 
   const [user, setUser] = useState(null);
   const [articles, setArticles] = useState([]);
   const [filteredArticles, setFilteredArticles] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isProfileVisible, setIsProfileVisible] = useState(false); // State to manage profile visibility
+  const [isProfileVisible, setIsProfileVisible] = useState(false);
+  const [isFollowing, setIsFollowing] = useState(false); // Track if the author is followed
 
-  // Fetch the user by ID, then use the userId to fetch their articles
   useEffect(() => {
     const fetchUserData = async () => {
+      setLoading(true); 
       try {
-        const userResponse = await axios.get(`http://127.0.0.1:1234/api/article/user/user/66e5c5e67c08e2d53d08bd9a`);
+        const userResponse = await axios.get(`http://127.0.0.1:1234/api/article/user/user/${userId}`);
         const userData = userResponse.data.user;
         setUser(userData);
 
-        const articlesResponse = await axios.get(`http://127.0.0.1:1234/api/article/post/article/66e5c5e67c08e2d53d08bd9a`);
+        // Check if the current user is following the author
+        const currentUser = await axios.get(`http://127.0.0.1:1234/api/article/user/profile`, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        setIsFollowing(currentUser.data.user.following.includes(userData._id)); // Check if the user is in the following list
+
+        const articlesResponse = await axios.get(`http://127.0.0.1:1234/api/article/post/article/${userId}`);
         const articlesData = articlesResponse.data.posts || [];
         setArticles(articlesData);
         setFilteredArticles(articlesData);
@@ -37,16 +47,19 @@ const UserProfilePage = () => {
     fetchUserData();
   }, [userId]);
 
-  // Search functionality
+  const handleArticleClick = (article) => {
+    navigate(`/articles/${article._id}`); 
+  };
+
   useEffect(() => {
-    if (articles && articles.length > 0) {
+    if (articles.length > 0) {
       const filtered = articles.filter((article) =>
         article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
         article.description.toLowerCase().includes(searchQuery.toLowerCase())
       );
       setFilteredArticles(filtered);
     } else {
-      setFilteredArticles([]); // Reset filtered articles if articles is empty
+      setFilteredArticles([]); 
     }
   }, [searchQuery, articles]);
 
@@ -54,9 +67,36 @@ const UserProfilePage = () => {
     setSearchQuery(query);
   };
 
-  // Toggle function for profile section
   const toggleProfileVisibility = () => {
     setIsProfileVisible(!isProfileVisible);
+  };
+
+  const followAuthor = async () => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${user._id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setIsFollowing(true);
+      alert('Successfully followed the author!');
+    } catch (error) {
+      console.error('Error following:', error);
+    }
+  };
+
+  const unfollowAuthor = async () => {
+    try {
+      const response = await axios.post(`http://127.0.0.1:1234/api/article/user/unfollow/${user._id}`, {}, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        },
+      });
+      setIsFollowing(false);
+      alert('Successfully unfollowed the author!');
+    } catch (error) {
+      console.error('Error unfollowing:', error);
+    }
   };
 
   if (loading) return <p className="text-center text-white">Loading...</p>;
@@ -78,6 +118,7 @@ const UserProfilePage = () => {
           fill="none" 
           viewBox="0 0 24 24" 
           stroke="currentColor"
+          aria-label="Toggle Profile"
         >
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16m-7 6h7" />
         </svg>
@@ -95,17 +136,23 @@ const UserProfilePage = () => {
                 alt="Profile"
                 className="w-24 h-24 rounded-full mx-auto mb-4"
               />
-              <h2 className="text-xl font-semibold">{user.firstName} {user.lastName}</h2>
-              <p className="text-gray-400">{user.email}</p>
+              <h2 className="text-xl font-semibold">{user.firstName || 'N/A'} {user.lastName || 'N/A'}</h2>
+              <p className="text-gray-400">{user.email || 'No email available'}</p>
               <p className="text-gray-400">Followers: {user.followers?.length || 0}</p>
               <p className="text-gray-400">Following: {user.following?.length || 0}</p>
+              <button
+                onClick={isFollowing ? unfollowAuthor : followAuthor}
+                className={`mt-4 px-4 py-2 rounded-lg ${isFollowing ? 'bg-red-600' : 'bg-blue-600'}`}
+              >
+                {isFollowing ? 'Unfollow' : 'Follow'}
+              </button>
             </div>
           )}
         </div>
 
         {/* Main Content Area */}
         <div className="flex-1 p-8 overflow-y-auto">
-          <h1 className="text-2xl font-bold mb-6">Articles by {user?.firstName} {user?.lastName}</h1>
+          <h1 className="text-2xl font-bold mb-6">Articles by {user?.firstName || 'User'} {user?.lastName || ''}</h1>
 
           {/* Search Bar */}
           <div className="mb-8 flex justify-center">
@@ -122,11 +169,12 @@ const UserProfilePage = () => {
             {filteredArticles.length > 0 ? (
               filteredArticles.map((article) => (
                 <ArticleCard
-                  key={article.id} // Ensure the key is unique
+                  key={article._id}
                   title={article.title}
                   description={article.description}
                   image={article.image}
                   categories={article.categories}
+                  onClick={() => handleArticleClick(article)}
                 />
               ))
             ) : (

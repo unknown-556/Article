@@ -20,7 +20,7 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path = '/Login' element={< Login />} />
         <Route path = '/create' element={< AddArticle/>} />
         <Route path = '/profile' element={<ProfilePage/>} />
-        <Route path = "/user" element={<UserProfilePage />} />
+        <Route path = "/author/:userId" element={<UserProfilePage />} />
         <Route path="/articles/:id" element={<ArticleView />} />
         <Route path = '*' element={<PageNotFound/>} />
       </Routes>
