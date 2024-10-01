@@ -57,6 +57,7 @@ const ProfilePage = () => {
   const [error, setError] = useState(null);
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
@@ -73,7 +74,11 @@ const ProfilePage = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    navigate('/login');
+    setShowPopup(true); 
+      
+      setTimeout(() => {
+        navigate('/login');
+      }, 2000);
   };
 
   const handleProfilePicClick = () => {
@@ -280,6 +285,15 @@ const ProfilePage = () => {
           {activePage === 'Library' && <Library />}
         </div>
       </div>
+
+      {showPopup && (
+        <div className="fixed inset-0 text-green-500 flex justify-center items-center bg-black bg-opacity-75 z-50">
+          <div className="bg-black p-6 rounded-lg text-center">
+            <h3 className="text-lg text-green-500 font-bold mb-2">Success!</h3>
+            <p>Logged out succsessfully.</p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

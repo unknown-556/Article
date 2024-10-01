@@ -1,8 +1,23 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { useParams, useNavigate, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import Navbar from '../../components/NavBar';
 import ArticleCard from '../../components/articleCards';
+
+const Popup = ({ message, onClose }) => {
+  return (
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+      <div className="bg-white p-6 rounded shadow-lg">
+        <p className="text-center text-black">{message}</p>
+        <button 
+          onClick={onClose} 
+          className="mt-4 px-4 py-2 bg-blue-500 text-white rounded">
+          Close
+        </button>
+      </div>
+    </div>
+  );
+};
 
 const UserProfilePage = () => {
   const { userId } = useParams(); 
@@ -15,6 +30,9 @@ const UserProfilePage = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isProfileVisible, setIsProfileVisible] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
+  const [followLoading, setFollowLoading] = useState(false);
+  const [popupMessage, setPopupMessage] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
 
   // Fetch user data and articles
   useEffect(() => {
@@ -29,15 +47,15 @@ const UserProfilePage = () => {
         // Fetch current logged-in user profile to check following status
         const currentUserResponse = await axios.get(`http://127.0.0.1:1234/api/article/user/profile`, {
           headers: {
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            Authorization: `Bearer ${localStorage?.getItem('token')}`,
           },
         });
         const currentUser = currentUserResponse.data.user;
         setIsFollowing(currentUser.following.includes(userData._id)); 
 
-        // Fetch articles by the profile user
         const articlesResponse = await axios.get(`http://127.0.0.1:1234/api/article/post/article/${userId}`);
         const articlesData = articlesResponse.data.posts || [];
+        console.log(articlesData);
         setArticles(articlesData);
         setFilteredArticles(articlesData);
       } catch (error) {
@@ -51,22 +69,42 @@ const UserProfilePage = () => {
     fetchUserData();
   }, [userId]);
 
+  const Popup = ({ message, onClose }) => {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
+        <div className="bg-black p-8 rounded-lg shadow-2xl transform transition-transform duration-300 scale-100 hover:scale-105">
+          <p className="text-lg text-center text-white font-medium">{message}</p>
+          <button 
+            onClick={onClose} 
+            className="mt-6 w-full px-6 py-3 bg-green-600 text-white rounded-md hover:bg-green-500 transition duration-200">
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+  
+
   // Handle article click to navigate to ArticleView
   const handleArticleClick = (article) => {
     navigate(`/articles/${article._id}`); 
   };
 
-  // Filter articles based on search query
+  // Debounced filtering of articles based on search query
   useEffect(() => {
-    if (articles.length > 0) {
-      const filtered = articles.filter((article) =>
-        article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        article.description.toLowerCase().includes(searchQuery.toLowerCase())
-      );
-      setFilteredArticles(filtered);
-    } else {
-      setFilteredArticles([]); 
-    }
+    const debounceTimeout = setTimeout(() => {
+      if (articles.length > 0) {
+        const filtered = articles.filter((article) =>
+          article.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          article.description.toLowerCase().includes(searchQuery.toLowerCase())
+        );
+        setFilteredArticles(filtered);
+      } else {
+        setFilteredArticles([]); 
+      }
+    }, 300); // 300ms debounce time
+
+    return () => clearTimeout(debounceTimeout);
   }, [searchQuery, articles]);
 
   const handleSearch = (query) => {
@@ -77,35 +115,47 @@ const UserProfilePage = () => {
     setIsProfileVisible(!isProfileVisible);
   };
 
-  // Handle following the author
+  // Handle following the author with optimistic UI update
   const followAuthor = async () => {
+    setFollowLoading(true);
+    setIsFollowing(true); // Optimistically update the UI
     try {
       await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${user._id}`, {}, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage?.getItem('token')}`,
         },
       });
-      setIsFollowing(true);
-      alert('Successfully followed the author!');
+      setPopupMessage('Successfully followed the author!');
+      setShowPopup(true);
     } catch (error) {
       console.error('Error following:', error);
-      alert('Failed to follow the author.');
+      setIsFollowing(false); 
+      setPopupMessage('Failed to follow the author.');
+      setShowPopup(true);
+    } finally {
+      setFollowLoading(false);
     }
   };
 
-  // Handle unfollowing the author
+  // Handle unfollowing the author with optimistic UI update
   const unfollowAuthor = async () => {
+    setFollowLoading(true);
+    setIsFollowing(false); // Optimistically update the UI
     try {
-      await axios.post(`http://127.0.0.1:1234/api/article/user/unfollow/${user._id}`, {}, {
+      await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${user._id}`, {}, {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem('token')}`,
+          Authorization: `Bearer ${localStorage?.getItem('token')}`,
         },
       });
-      setIsFollowing(false);
-      alert('Successfully unfollowed the author!');
+      setPopupMessage('Successfully unfollowed the author!');
+      setShowPopup(true);
     } catch (error) {
       console.error('Error unfollowing:', error);
-      alert('Failed to unfollow the author.');
+      setIsFollowing(true); // Revert if request fails
+      setPopupMessage('Failed to unfollow the author.');
+      setShowPopup(true);
+    } finally {
+      setFollowLoading(false);
     }
   };
 
@@ -137,24 +187,26 @@ const UserProfilePage = () => {
       {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <div className={`lg:w-1/4 w-full sm:h-full bg-black p-6 lg:relative absolute transition-all duration-300 z-50 border-r border-gray-900 ${isProfileVisible ? 'block' : 'hidden lg:block'}`}>
-          {/* User Profile Section */}
+        <div className={`lg:w-1/4 w-full sm:h-full bg-black p-6 lg:relative absolute transition-transform duration-300 ease-in-out transform ${isProfileVisible ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 z-50 border-r border-gray-900`}>
           {user && (
             <div className="text-center mb-8">
               <img
                 src={user.profilePic || '/default-profile.png'}
                 alt="Profile"
-                className="w-24 h-24 rounded-full mx-auto mb-4"
+                className="w-32 h-32 rounded-full mx-auto mb-6 shadow-lg ring-4 ring-gray-700"
               />
-              <h2 className="text-xl font-semibold">{user.firstName || 'N/A'} {user.lastName || 'N/A'}</h2>
-              <p className="text-gray-400">{user.email || 'No email available'}</p>
-              <p className="text-gray-400">Followers: {user.followers?.length || 0}</p>
-              <p className="text-gray-400">Following: {user.following?.length || 0}</p>
+              <h2 className="text-2xl font-semibold text-white">{user.firstName || 'N/A'} {user.lastName || 'N/A'}</h2>
+              <p className="text-gray-400 mb-2">{user.email || 'No email available'}</p>
+              <div className="flex justify-center space-x-4 mb-4">
+                <span className="text-gray-400">Followers: <strong className="text-white">{user.followers?.length || 0}</strong></span>
+                <span className="text-gray-400">Following: <strong className="text-white">{user.following?.length || 0}</strong></span>
+              </div>
               <button
                 onClick={isFollowing ? unfollowAuthor : followAuthor}
-                className={`mt-4 px-4 py-2 rounded-lg ${isFollowing ? 'bg-red-600 hover:bg-red-500' : 'bg-blue-600 hover:bg-blue-500'} text-white transition duration-150`}
+                className={`mt-4 px-6 py-2 rounded-full ${isFollowing ? 'bg-red-600 hover:bg-red-500' : 'bg-green-600 hover:bg-green-500'} text-white transition duration-200 ease-in-out shadow-md transform hover:scale-105`}
+                disabled={followLoading}
               >
-                {isFollowing ? 'Unfollow' : 'Follow'}
+                {followLoading ? 'Processing...' : isFollowing ? 'Unfollow' : 'Follow'}
               </button>
             </div>
           )}
@@ -174,8 +226,8 @@ const UserProfilePage = () => {
             />
           </div>
 
-          {/* Articles Grid */}
-          <div className="grid gap-6">
+           {/* Articles Grid */}
+           <div className="grid gap-6">
             {filteredArticles.length > 0 ? (
               filteredArticles.map((articleItem) => (
                 <ArticleCard
@@ -188,11 +240,19 @@ const UserProfilePage = () => {
                 />
               ))
             ) : (
-              <p className="text-white">No articles found matching your search.</p>
+              <p className="text-white text-center">No articles found. {user?.firstName} hasn't written any articles yet!</p>
             )}
           </div>
         </div>
       </div>
+
+      {/* Popup */}
+      {showPopup && (
+        <Popup 
+          message={popupMessage} 
+          onClose={() => setShowPopup(false)} 
+        />
+      )}
     </div>
   );
 };

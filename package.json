@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "axios": "^1.7.7",
+    "dompurify": "^3.1.7",
     "froala-editor": "^4.2.2",
     "lucide-react": "^0.439.0",
     "react": "^18.3.1",

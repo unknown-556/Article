@@ -6,7 +6,7 @@ const Navbar = ({ onSearch }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isNavOpen, setIsNavOpen] = useState(false); // Toggle for mobile dropdown menu
+  const [isNavOpen, setIsNavOpen] = useState(false); 
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -27,8 +27,21 @@ const Navbar = ({ onSearch }) => {
     fetchUserData();
   }, []);
 
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>{error}</p>;
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <p className="text-white text-xl">Loading...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <p className="text-red-500 text-xl">{error}</p>
+      </div>
+    );
+  }
 
   return (
     <nav className="bg-black text-white p-2 flex items-center justify-between lg:pt-0  pl-1 sm:p-4 md:p-5 lg:p-2 w-full">

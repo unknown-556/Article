@@ -55,11 +55,19 @@ const Library = ({ onArticleClick }) => {
   }, [searchQuery, articles]);
 
   if (loading) {
-    return <div>Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <p className="text-white text-xl">Loading...</p>
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error}</div>;
+    return (
+      <div className="flex justify-center items-center h-screen bg-black">
+        <p className="text-red-500 text-xl">{error}</p>
+      </div>
+    );
   }
   return (
     <div className="container mx-auto px-4">

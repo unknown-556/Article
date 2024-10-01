@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+// import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import FroalaEditorComponent from 'react-froala-wysiwyg';
@@ -19,6 +19,8 @@ const AddArticle = () => {
   const [formPart, setFormPart] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [showCategories, setShowCategories] = useState(false); 
+  const [loading, setLoading] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   const categories = [
     'Technology', 'Health', 'Business', 'Science', 'Programming', 'Coding', 'Psychology', 'Marketing', 'Lifestyle', 'Books',
@@ -53,13 +55,11 @@ const AddArticle = () => {
 
   const handleCategorySelect = (category) => {
     if (formData.categories.includes(category)) {
-      // Remove the category if it's already selected
       setFormData({
         ...formData,
         categories: formData.categories.filter(c => c !== category),
       });
     } else {
-      // Add the category if it's not already selected
       setFormData({
         ...formData,
         categories: [...formData.categories, category],
@@ -70,6 +70,7 @@ const AddArticle = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
 
     const data = new FormData();
     data.append('title', formData.title);
@@ -89,7 +90,7 @@ const AddArticle = () => {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
-      alert('Article added successfully!');
+      setShowPopup(true); 
       setFormData({ title: '', description: '', content: '', image: '', categories: [] });
       navigate('/profile');
       setImagePreview(null);
@@ -136,6 +137,11 @@ const AddArticle = () => {
 
   return (
     <div className="flex justify-center items-center h-screen bg-black">
+      {loading && (
+        <div className="absolute inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
+          <div className="loader"></div>
+        </div>
+      )}  
       {formPart === 0 && (
         <form onSubmit={handleSubmit} className="bg-black p-8 rounded-lg shadow-md w-full max-w-md md:max-w-2xl lg:max-w-3xl">
           <h2 className="text-2xl text-white mb-6 text-center">Add New Article</h2>
@@ -214,34 +220,31 @@ const AddArticle = () => {
         </form>
       )}
 
-      {formPart === 1 && (
-        <div className="flex flex-col items-center bg-black p-8 rounded-lg shadow-md w-full max-w-md md:max-w-2xl lg:max-w-3xl relative">
-          <h2 className="text-2xl text-white mb-6 text-center">Add Image</h2>
-          <button
-            type="button"
-            onClick={triggerFileUpload}
-            className="bg-white text-black w-12 h-12 rounded-full flex justify-center items-center text-xl hover:bg-gray-700 mb-4"
-            title="Upload Image"
-          >
-            +
-          </button>
-          <input type="file" id="file-input" style={{ display: 'none' }} onChange={handleImageUpload} />
-          {imagePreview && (
-            <div className="w-full flex justify-center mt-4">
-              <img src={imagePreview} alt="Image preview" className="w-3/4 h-1/3 rounded-lg shadow-md" />
+          {formPart === 1 && (
+          <div className="flex flex-col items-center bg-black p-8 rounded-lg shadow-md w-full max-w-md md:max-w-2xl lg:max-w-3xl relative">
+            <h2 className="text-2xl text-white mb-6 text-center">Add Image</h2>
+            <div
+              onClick={triggerFileUpload}
+              className="bg-black text-white w-full h-48 rounded-lg flex justify-center items-center cursor-pointer text-xl hover:bg-gray-700 mb-4 border-dashed border-2 border-white"
+            >
+              {imagePreview ? (
+                <img src={imagePreview} alt="Image preview" className="w-full h-full object-cover rounded-lg" />
+              ) : (
+                'Click or Drag to Upload Image'
+              )}
             </div>
-          )}
+            <input id="file-input" type="file" onChange={handleImageUpload} className="hidden" />
 
-          <div className="w-full flex justify-between mt-4">
-            <button onClick={handleBack} className="w-2/5 bg-black p-3 rounded-lg text-white hover:text-black hover:bg-white">
-              Back
-            </button>
-            <button onClick={handleNext} className="w-2/5 bg-black p-3 rounded-lg text-white hover:text-black hover:bg-white">
-              Next
-            </button>
+            <div className="flex justify-between w-full mt-6">
+              <button onClick={handleBack} className="w-2/5 bg-black hover:bg-white hover:text-black p-3 hover:rounded-xl text-white">
+                Back
+              </button>
+              <button onClick={handleNext} className="w-2/5 bg-black hover:bg-white hover:text-black p-3 hover:rounded-xl text-white">
+                Next
+              </button>
+            </div>
           </div>
-        </div>
-      )}
+        )}
 
       {formPart === 2 && (
         <div className="w-full h-full relative">
@@ -307,6 +310,18 @@ const AddArticle = () => {
   </div>
 )}
 
+
+      {showPopup && (
+              <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-75 z-50">
+                <div className="bg-black p-6 rounded-lg text-center">
+                  <h3 className="text-lg text-green-500 font-bold mb-2">Success!</h3>
+                  <p>Your article has been added successfully.</p>
+                  <button onClick={() => setShowPopup(false)} className="mt-4 bg-black text-green-500 py-2 px-4 rounded">
+                    Close
+                  </button>
+                </div>
+              </div>
+            )}
     </div>
   );
 };

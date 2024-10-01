@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, useNavigate, Link } from 'react-router-dom'; // Import Link for client-side navigation
+import { useParams, useNavigate, Link } from 'react-router-dom'; 
 import axios from 'axios';
 import Navbar from '../../components/NavBar';
+
 
 const ArticleView = () => {
   const { id } = useParams();
@@ -13,9 +14,48 @@ const ArticleView = () => {
   const [error, setError] = useState(null);
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [isInLibrary, setIsInLibrary] = useState(false);
-  const [isFollowing, setIsFollowing] = useState(false); // Track if the author is followed
+  const [isFollowing, setIsFollowing] = useState(false); 
+  const [popupMessage, setPopupMessage] = useState('');
+  const [showPopup, setShowPopup] = useState(false);
+  const [formData, setFormData] = useState({ text: '' });
 
-  // Fetch the current logged-in user's profile
+  const Popup = ({ message, onClose }) => {
+    return (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-black p-6 rounded shadow-lg">
+          <p className="text-center text-green">{message}</p>
+          <button 
+            onClick={onClose} 
+            className="mt-4 px-4 py-2 bg-green-500 text-white rounded">
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  };
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  console.log(formData)
+
+  const addComment = async (comment) => {
+    try {
+      await axios.post(`http://127.0.0.1:1234/api/article/post/comment/${id}`, formData, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
+        }
+    });
+      setPopupMessage('Comment added!');
+      setShowPopup(true);
+    } catch (error) {
+      console.error('Error adding comment:', error);
+    }
+  }
+
+
+
   const getLoggedInUserProfile = async () => {
     try {
       const response = await axios.get(`http://127.0.0.1:1234/api/article/user/profile`, {
@@ -30,7 +70,7 @@ const ArticleView = () => {
     }
   };
 
-  // Fetch the article data
+
   const fetchArticle = async () => {
     try {
       const response = await axios.get(`http://127.0.0.1:1234/api/article/post/single/${id}`, {
@@ -48,7 +88,7 @@ const ArticleView = () => {
     }
   };
 
-  // Fetch the author data
+
   const getAuthor = async (authorId) => {
     try {
       if (authorId) {
@@ -120,7 +160,8 @@ const ArticleView = () => {
         },
       });
       setIsBookmarked(true);
-      alert('Article bookmarked!');
+      setPopupMessage('Article bookmarked!');
+      setShowPopup(true);
     } catch (error) {
       console.error('Error bookmarking article:', error);
       alert('Failed to bookmark the article.');
@@ -136,7 +177,8 @@ const ArticleView = () => {
         },
       });
       setIsInLibrary(true);
-      alert('Article added to library!');
+      setPopupMessage('Article added to library!');
+      setShowPopup(true);
     } catch (error) {
       console.error('Error adding article to library:', error);
       alert('Failed to add the article to library.');
@@ -152,7 +194,8 @@ const ArticleView = () => {
         },
       });
       setIsFollowing(true);
-      alert('Successfully followed the author!');
+      setPopupMessage('Successfully followed the author!');
+      setShowPopup(true);
     } catch (error) {
       console.error('Error following the author:', error);
       alert('Failed to follow the author.');
@@ -162,13 +205,14 @@ const ArticleView = () => {
   // Handle unfollowing the author
   const unfollowAuthor = async () => {
     try {
-      await axios.post(`http://127.0.0.1:1234/api/article/user/unfollow/${author._id}`, {}, {
+      await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${author._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       setIsFollowing(false);
-      alert('Successfully unfollowed the author!');
+      setPopupMessage('Successfully unfollowed the author!');
+      setShowPopup(true);
     } catch (error) {
       console.error('Error unfollowing the author:', error);
       alert('Failed to unfollow the author.');
@@ -220,9 +264,9 @@ const ArticleView = () => {
       </nav>
 
       {/* Main Content */}
-      <div className="flex flex-col md:flex-row flex-1 mx-auto p-8 space-y-8 md:space-y-0 md:space-x-8">
+      <div className="flex flex-col md:flex-row flex-1 mx-auto p-8 space-y-8 md:space-y-0 md:space-x-8 border-b border-gray-900">
         {/* Article Section */}
-        <div className="flex-1">
+        <div className="flex-1 border-b border-gray-900">
           {/* Action Buttons */}
           <div className="flex space-x-4 mb-4">
             <button
@@ -247,6 +291,8 @@ const ArticleView = () => {
             </button>
           </div>
 
+          <p className="text-gray-500 ">{new Date(article.createdAt).toLocaleString()}</p>
+
           {/* View Count */}
           <div className="flex items-center mb-4 text-sm text-gray-400">
             <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -255,6 +301,8 @@ const ArticleView = () => {
             </svg>
             <span>Views: {article.viewCount || 0}</span>
           </div>
+
+          
 
           {/* Article Title */}
           <h1 className="text-4xl font-bold mb-6">{article.title}</h1>
@@ -315,37 +363,77 @@ const ArticleView = () => {
 
           {/* Article Content */}
           <div
-            className="text-lg leading-8 mb-8"
+            className="text-lg leading-8 mb-8 "
             dangerouslySetInnerHTML={{ __html: article.content || 'No content available for this article.' }}
           />
 
-          {/* Optional: Add a Comment Section */}
-          <div className="border-t border-gray-700 pt-6">
-            <h2 className="text-2xl font-semibold mb-4">Comments</h2>
-            {/* Comment Section Placeholder */}
-            <div className="text-gray-400">No comments yet.</div>
+      {/* Comments Section */}
+        <div className="mt-8 bg-black p-6  shadow-lg border-t border-gray-800">
+          <h2 className="text-2xl font-bold mb-4 text-white">Comments</h2>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              addComment(formData.text);
+            }}
+            className="flex flex-col mb-4"
+          >
+            <textarea
+              name="text"
+              value={formData.text}
+              onChange={handleChange}
+              placeholder="Add a comment..."
+              className="resize-none h-24 p-3 border border-gray-600 rounded-lg bg-gray-900 text-white focus:outline-none focus:ring-2 focus:ring-blue-600 transition duration-200"
+              required
+            />
+            <button
+              type="submit"
+              className="mt-3 px-4 py-2 bg-black hover:bg-white hover:text-black rounded-lg shadow transition duration-200"
+            >
+              Submit Comment
+            </button>
+          </form>
+          </div>
+
+          {/* List of Comments */}
+          <div>
+            {article.comments && article.comments.length > 0 ? (
+              article.comments.map((comment, index) => (
+                <div key={index} className="border-b border-gray-700 py-3">
+                  <Link to={`/author/${comment.userId}`}>
+                    <p className="text-sm font-semibold text-blue-400 hover:underline">{comment.postedBy}</p>
+                  </Link>
+                  <p className="text-gray-500 text-sm">{new Date(comment.createdAt).toLocaleString()}</p>
+                  <p className="text-gray-300">{comment.text}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400">No comments yet.</p>
+            )}
           </div>
         </div>
 
+
         {/* Related Articles Section */}
-        <div className="lg:w-1/4">
-          <h2 className="text-2xl font-bold mb-4">Related Articles</h2>
-          {relatedArticles.length > 0 ? (
-            relatedArticles.map((relatedArticle) => (
-              <div key={relatedArticle._id} className="border-b border-gray-700 mb-4 pb-4">
-                <h3 className="text-lg font-semibold">
-                  <Link to={`/articles/${relatedArticle._id}`} className="text-blue-500 hover:underline">
-                    {relatedArticle.title}
-                  </Link>
-                </h3>
+        <div className="md:w-1/3">
+          <h2 className="text-2xl font-semibold mb-4">Related Articles</h2>
+          <div className="space-y-4">
+            {relatedArticles.map((relatedArticle) => (
+              <Link to={`/article/${relatedArticle._id}`} key={relatedArticle._id} className="block p-4 bg-black rounded-lg hover:bg-gray-700 transition duration-150 border-b border-gray-800">
+                <h3 className="text-lg font-bold">{relatedArticle.title}</h3>
                 <p className="text-gray-400">{relatedArticle.description}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-400">No related articles found.</p>
-          )}
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
+
+      {/* Popup Message */}
+      {showPopup && (
+        <Popup
+          message={popupMessage}
+          onClose={() => setShowPopup(false)}
+        />
+      )}
     </div>
   );
 };
