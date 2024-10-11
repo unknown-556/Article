@@ -6,7 +6,8 @@ const Navbar = ({ onSearch }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [isNavOpen, setIsNavOpen] = useState(false); 
+  const [unreadNotifications, setUnreadNotifications] = useState(0);
+  const [isNavOpen, setIsNavOpen] = useState(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -17,6 +18,14 @@ const Navbar = ({ onSearch }) => {
           },
         });
         setUser(response.data.user);
+        // Fetch unread notifications count
+        const notificationsResponse = await axios.get('http://127.0.0.1:1234/api/article/user/unread/notifications', {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
+          },
+        });
+        console.log(notificationsResponse.data.unreadCount);
+        setUnreadNotifications(notificationsResponse.data.unreadCount);
       } catch (error) {
         setError('Failed to fetch user data');
       } finally {
@@ -44,9 +53,9 @@ const Navbar = ({ onSearch }) => {
   }
 
   return (
-    <nav className="bg-black text-white p-2 flex items-center justify-between lg:pt-0  pl-1 sm:p-4 md:p-5 lg:p-2 w-full">
+    <nav className="bg-black text-white p-2 flex items-center justify-between lg:pt-0 pl-1 sm:p-4 md:p-5 lg:p-2 w-full">
       {/* Logo */}
-      <div className="flex items-center  lg:pl-2 ">
+      <div className="flex items-center lg:pl-2 ">
         <Link to="/" className="text-2xl font-bold h-10 w-10 ">
           <img src="/letterform.png" alt="" />
         </Link>
@@ -55,15 +64,12 @@ const Navbar = ({ onSearch }) => {
       {/* Search Bar (visible on all screens) */}
       <div className="flex-grow mx-4 lg:pl-5">
         <input
-            type="text"
-            placeholder="Search..."
-            className="w-full lg:w-60 p-2 rounded-2xl bg-gray-900 text-white focus:outline-none focus:ring-1 focus:ring-white transition-all duration-500 ease-in-out lg:focus:w-full"
-            onChange={(e) => onSearch(e.target.value)}
+          type="text"
+          placeholder="Search..."
+          className="w-full lg:w-60 p-2 rounded-2xl bg-gray-900 text-white focus:outline-none focus:ring-1 focus:ring-white transition-all duration-500 ease-in-out lg:focus:w-full"
+          onChange={(e) => onSearch(e.target.value)}
         />
-        </div>
-
-
-
+      </div>
 
       {/* Hamburger Icon for Mobile View */}
       <div className="lg:hidden">
@@ -72,14 +78,12 @@ const Navbar = ({ onSearch }) => {
           className="text-white focus:outline-none"
         >
           <img
-              src={user?.profilePic || '/default-profile.png'}
-              alt="Profile"
-              className="w-8 h-8 rounded-full"
-            />
+            src={user?.profilePic || '/default-profile.png'}
+            alt="Profile"
+            className="w-8 h-8 rounded-full"
+          />
         </button>
       </div>
-
-      
 
       {/* Links - Dropdown on Mobile */}
       <div
@@ -89,9 +93,8 @@ const Navbar = ({ onSearch }) => {
       >
         <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 px-4 lg:px-0 py-4 lg:py-0">
           <Link to="/profile" className="hover:text-gray-400 flex items-center py-2 lg:hidden">
-            {/* Profile Picture in the Dropdown (visible only on mobile) */}
             <img
-              src={user?.profilePic|| '/default-profile.png'}
+              src={user?.profilePic || '/default-profile.png'}
               alt="Profile"
               className="w-8 h-8 rounded-full"
             />
@@ -116,7 +119,7 @@ const Navbar = ({ onSearch }) => {
             <p className="ml-2">Write</p>
           </Link>
 
-          <Link to="/notifications" className="hover:text-gray-400 flex items-center py-2 lg:pr-6 lg:pl-3">
+          <Link to="/notifications" className="hover:text-gray-400 flex items-center py-2 lg:pr-6 lg:pl-3 relative">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -131,17 +134,22 @@ const Navbar = ({ onSearch }) => {
                 d="M14 5v2a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3V5m4 0a1 1 0 0 1 1 1v2h-2V6a1 1 0 0 1 1-1zm-2 11v1a2 2 0 1 1-4 0v-1m2 0a2 2 0 0 1-2-2h4a2 2 0 0 1-2 2z"
               />
             </svg>
+            {unreadNotifications > 0 && (
+              <span className="absolute bg-red-600 text-white text-xs font-bold rounded-full px-2">
+                {unreadNotifications}
+              </span>
+            )}
           </Link>
         </div>
         <div className="hidden lg:block h-10 w-10">
-        <Link to="/profile" className="py-2">
-          <img
-            src={user?.profilePic || '/default-profile.png'}
-            alt="Profile"
-            className="w-10 h-10 rounded-full"
-          />
-        </Link>
-      </div>
+          <Link to="/profile" className="py-2">
+            <img
+              src={user?.profilePic || '/default-profile.png'}
+              alt="Profile"
+              className="w-10 h-10 rounded-full"
+            />
+          </Link>
+        </div>
       </div>
     </nav>
   );
