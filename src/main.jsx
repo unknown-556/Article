@@ -9,7 +9,8 @@ import PageNotFound from './pages/PageNotFound';
 import UserProfilePage from './pages/profiles/profile';
 import ArticleView from './pages/view/ArticleView';
 import Notifications from './pages/view/notifications';
-import ArticleViewingPage from './pages/view/articles';
+import Home from './pages/view/HomePage'
+// import ArticleViewingPage from './pages/view/articles';
 import SessionManager from './components/SessionManager';
 import './index.css'
 
@@ -24,6 +25,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path = "/author/:userId" element={<UserProfilePage />} />
         <Route path="/articles/:id" element={<ArticleView />} />
         <Route path = '/notifications' element={< Notifications/>} />
+        <Route path = '/Home' element={< Home/>} />
+        <Route path = '/' element={< Home/>} />
         <Route path = '*' element={<PageNotFound/>} />
       </Routes>
     {/* </SessionManager> */}

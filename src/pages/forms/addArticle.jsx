@@ -84,7 +84,7 @@ const AddArticle = () => {
     console.log(formData)
 
     try {
-      await axios.post('http://127.0.0.1:1234/api/article/post/create', data, {
+      await axios.post('https://article-back.onrender.com/api/article/post/create', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`,

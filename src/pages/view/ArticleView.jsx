@@ -61,7 +61,7 @@ const ArticleView = () => {
   // Add a new comment
   const addComment = async () => {
     try {
-      await axios.post(`http://127.0.0.1:1234/api/article/post/comment/${id}`, 
+      await axios.post(`https://article-back.onrender.com/api/article/post/comment/${id}`, 
         { text: commentText }, 
         {
           headers: {
@@ -100,7 +100,7 @@ const ArticleView = () => {
 
     try {
       await axios.post(
-        `http://127.0.0.1:1234/api/article/post/reply/${id}/${commentId}`,
+        `https://article-back.onrender.com/api/article/post/reply/${id}/${commentId}`,
         { text: replyText },
         {
           headers: {
@@ -126,7 +126,7 @@ const ArticleView = () => {
   // Fetch logged-in user's profile
   const getLoggedInUserProfile = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:1234/api/article/user/profile`, {
+      const response = await axios.get(`https://article-back.onrender.com/api/article/user/profile`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -141,7 +141,7 @@ const ArticleView = () => {
   // Fetch the main article
   const fetchArticle = async () => {
     try {
-      const response = await axios.get(`http://127.0.0.1:1234/api/article/post/single/${id}`, {
+      const response = await axios.get(`https://article-back.onrender.com/api/article/post/single/${id}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -161,7 +161,7 @@ const ArticleView = () => {
   const getAuthor = async (authorId) => {
     try {
       if (authorId) {
-        const response = await axios.get(`http://127.0.0.1:1234/api/article/user/author/${authorId}`);
+        const response = await axios.get(`https://article-back.onrender.com/api/article/user/author/${authorId}`);
         setAuthor(response.data.user);
         checkUserFollowing(response.data.user._id); 
       }
@@ -212,7 +212,7 @@ const ArticleView = () => {
       const categories = article?.categories;
       if (categories && categories.length > 0) {
         const categoriesParam = categories.join(','); // Assuming API expects comma-separated categories
-        const response = await axios.get(`http://127.0.0.1:1234/api/article/post/related/${categoriesParam}`);
+        const response = await axios.get(`https://article-back.onrender.com/api/article/post/related/${categoriesParam}`);
         setRelatedArticles(response.data.posts);
       }
     } catch (error) {
@@ -223,7 +223,7 @@ const ArticleView = () => {
   // Handle bookmarking the article
   const handleBookmark = async () => {
     try {
-      await axios.post(`http://127.0.0.1:1234/api/article/user/bookmark/${article._id}`, {}, {
+      await axios.post(`https://article-back.onrender.com/api/article/user/bookmark/${article._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -241,7 +241,7 @@ const ArticleView = () => {
   // Handle adding the article to the library
   const handleAddToLibrary = async () => {
     try {
-      await axios.post(`http://127.0.0.1:1234/api/article/user/library/${article._id}`, {}, {
+      await axios.post(`https://article-back.onrender.com/api/article/user/library/${article._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -259,7 +259,7 @@ const ArticleView = () => {
   // Handle following the author
   const followAuthor = async () => {
     try {
-      await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${author._id}`, {}, {
+      await axios.post(`https://article-back.onrender.com/api/article/user/follow/${author._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -277,7 +277,7 @@ const ArticleView = () => {
   // Handle unfollowing the author
   const unfollowAuthor = async () => {
     try {
-      await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${author._id}`, {}, {
+      await axios.post(`https://article-back.onrender.com/api/article/user/follow/${author._id}`, {}, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },

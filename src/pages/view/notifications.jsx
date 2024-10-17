@@ -47,7 +47,7 @@ const Notifications = () => {
         return;
       }
 
-      const response = await axios.get(`http://127.0.0.1:1234/api/article/user/notifications`, {
+      const response = await axios.get(`https://article-back.onrender.com/api/article/user/notifications`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

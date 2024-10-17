@@ -17,16 +17,7 @@ const ArticleCard = ({ title, description, image, categories, onClick }) => {
           {description}
         </p>
         <div className='lg:pt-14 sm:pt-1'>
-        <div className=" left-0 bottom-0 flex flex-wrap space-x-2 mt-3 ">
-          {categories.map((category, index) => (
-            <span
-              key={index}
-              className="text-xs bg-gray-200 text-gray-800 px-2 py-1 rounded"
-            >
-              {category}
-            </span>
-          ))}
-        </div>
+        
         </div>
       </div>
 

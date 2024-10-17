@@ -40,12 +40,12 @@ const UserProfilePage = () => {
       setLoading(true); 
       try {
         // Fetch the profile user data
-        const userResponse = await axios.get(`http://127.0.0.1:1234/api/article/user/user/${userId}`);
+        const userResponse = await axios.get(`https://article-back.onrender.com/api/article/user/user/${userId}`);
         const userData = userResponse.data.user;
         setUser(userData);
 
         // Fetch current logged-in user profile to check following status
-        const currentUserResponse = await axios.get(`http://127.0.0.1:1234/api/article/user/profile`, {
+        const currentUserResponse = await axios.get(`https://article-back.onrender.com/api/article/user/profile`, {
           headers: {
             Authorization: `Bearer ${localStorage?.getItem('token')}`,
           },
@@ -53,7 +53,7 @@ const UserProfilePage = () => {
         const currentUser = currentUserResponse.data.user;
         setIsFollowing(currentUser.following.includes(userData._id)); 
 
-        const articlesResponse = await axios.get(`http://127.0.0.1:1234/api/article/post/article/${userId}`);
+        const articlesResponse = await axios.get(`https://article-back.onrender.com/api/article/post/article/${userId}`);
         const articlesData = articlesResponse.data.posts || [];
         console.log(articlesData);
         setArticles(articlesData);

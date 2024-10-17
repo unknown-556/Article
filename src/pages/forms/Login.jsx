@@ -19,7 +19,7 @@ const Login = () => {
     setError(''); // Reset error on each submit
 
     try {
-      const res = await axios.post('http://127.0.0.1:1234/api/article/auth/login', formData);
+      const res = await axios.post('https://article-back.onrender.com/api/article/auth/login', formData);
       localStorage.setItem('token', res.data.accessToken);
       setShowPopup(true); 
       

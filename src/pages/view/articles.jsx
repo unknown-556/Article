@@ -1,250 +1,174 @@
 // import React, { useEffect, useState } from 'react';
-// import { useParams, useNavigate, Link } from 'react-router-dom'; 
+// import { Link } from 'react-router-dom';
 // import axios from 'axios';
-// import Navbar from '../../components/NavBar';
-// import LoadingSpinner from '../../components/LoadingSpinner'; // Add a loading spinner component if necessary
-// import ErrorMessage from '../../components/ErrorMessage'; // Add an error message component
 
-const ArticleView = () => {
-//   const { id } = useParams();
-//   const navigate = useNavigate();
-//   const [article, setArticle] = useState(null);
-//   const [relatedArticles, setRelatedArticles] = useState([]);
-//   const [author, setAuthor] = useState(null);
+// const Navbar = ({ onSearch }) => {
+//   const [user, setUser] = useState(null);
 //   const [loading, setLoading] = useState(true);
 //   const [error, setError] = useState(null);
-//   const [isBookmarked, setIsBookmarked] = useState(false);
-//   const [isInLibrary, setIsInLibrary] = useState(false);
-//   const [isFollowing, setIsFollowing] = useState(false);
-//   const [actionLoading, setActionLoading] = useState({ bookmark: false, library: false, follow: false });
-
-//   const getLoggedInUserProfile = async () => {
-//     try {
-//       const response = await axios.get(`http://127.0.0.1:1234/api/article/user/profile`, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-//       });
-//       return response.data.user;
-//     } catch (error) {
-//       setError('Error fetching user profile.');
-//       return null;
-//     }
-//   };
-
-//   const fetchArticle = async () => {
-//     try {
-//       const response = await axios.get(`http://127.0.0.1:1234/api/article/post/single/${id}`, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-//       });
-//       setArticle(response.data.article);
-//       setLoading(false);
-//       checkUserBookmark(response.data.article._id);
-//       checkUserLibrary(response.data.article._id);
-//     } catch (error) {
-//       setError(error.response?.data?.message || 'Failed to fetch article.');
-//       setLoading(false);
-//     }
-//   };
-
-//   const getAuthor = async (authorId) => {
-//     try {
-//       if (authorId) {
-//         const response = await axios.get(`http://127.0.0.1:1234/api/article/user/author/${authorId}`);
-//         setAuthor(response.data.user);
-//         checkUserFollowing(response.data.user._id);
-//       }
-//     } catch (error) {
-//       setError('Error fetching author details.');
-//     }
-//   };
-
-//   const checkUserBookmark = async (articleId) => {
-//     try {
-//       const user = await getLoggedInUserProfile();
-//       if (user && user.bookMarks) {
-//         setIsBookmarked(user.bookMarks.includes(articleId));
-//       }
-//     } catch (error) {
-//       setError('Error checking bookmarks.');
-//     }
-//   };
-
-//   const checkUserLibrary = async (articleId) => {
-//     try {
-//       const user = await getLoggedInUserProfile();
-//       if (user && user.library) {
-//         setIsInLibrary(user.library.includes(articleId));
-//       }
-//     } catch (error) {
-//       setError('Error checking library.');
-//     }
-//   };
-
-//   const checkUserFollowing = async (authorId) => {
-//     try {
-//       const user = await getLoggedInUserProfile();
-//       if (user && user.following) {
-//         setIsFollowing(user.following.includes(authorId));
-//       }
-//     } catch (error) {
-//       setError('Error checking following status.');
-//     }
-//   };
-
-//   const fetchRelatedArticles = async () => {
-//     try {
-//       const categories = article?.categories;
-//       if (categories && categories.length > 0) {
-//         const categoriesParam = categories.join(',');
-//         const response = await axios.get(`http://127.0.0.1:1234/api/article/post/related/${categoriesParam}`);
-//         setRelatedArticles(response.data.posts);
-//       }
-//     } catch (error) {
-//       setError('Error fetching related articles.');
-//     }
-//   };
-
-//   const handleBookmark = async () => {
-//     setActionLoading({ ...actionLoading, bookmark: true });
-//     try {
-//       await axios.post(`http://127.0.0.1:1234/api/article/user/bookmark/${article._id}`, {}, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-//       });
-//       setIsBookmarked(true);
-//       alert('Article bookmarked!');
-//     } catch (error) {
-//       alert('Failed to bookmark the article.');
-//     } finally {
-//       setActionLoading({ ...actionLoading, bookmark: false });
-//     }
-//   };
-
-//   const handleAddToLibrary = async () => {
-//     setActionLoading({ ...actionLoading, library: true });
-//     try {
-//       await axios.post(`http://127.0.0.1:1234/api/article/user/library/${article._id}`, {}, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-//       });
-//       setIsInLibrary(true);
-//       alert('Article added to library!');
-//     } catch (error) {
-//       alert('Failed to add the article to library.');
-//     } finally {
-//       setActionLoading({ ...actionLoading, library: false });
-//     }
-//   };
-
-//   const followAuthor = async () => {
-//     setActionLoading({ ...actionLoading, follow: true });
-//     try {
-//       await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${author._id}`, {}, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-//       });
-//       setIsFollowing(true);
-//       alert('Successfully followed the author!');
-//     } catch (error) {
-//       alert('Failed to follow the author.');
-//     } finally {
-//       setActionLoading({ ...actionLoading, follow: false });
-//     }
-//   };
-
-//   const unfollowAuthor = async () => {
-//     setActionLoading({ ...actionLoading, follow: true });
-//     try {
-//       await axios.post(`http://127.0.0.1:1234/api/article/user/unfollow/${author._id}`, {}, {
-//         headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
-//       });
-//       setIsFollowing(false);
-//       alert('Successfully unfollowed the author!');
-//     } catch (error) {
-//       alert('Failed to unfollow the author.');
-//     } finally {
-//       setActionLoading({ ...actionLoading, follow: false });
-//     }
-//   };
+//   const [unreadNotifications, setUnreadNotifications] = useState(0);
+//   const [isNavOpen, setIsNavOpen] = useState(false);
 
 //   useEffect(() => {
-//     fetchArticle();
-//   }, [id]);
+//     const fetchUserData = async () => {
+//       try {
+//         const response = await axios.get('http://127.0.0.1:1234/api/article/user/profile', {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem('token')}`,
+//           },
+//         });
+//         if (response.status === 200 && response.data.user) {
+//           setUser(response.data.user);
+//         }
 
-//   useEffect(() => {
-//     if (article) {
-//       getAuthor(article.postedBy);
-//       fetchRelatedArticles();
-//     }
-//   }, [article]);
+//         // Fetch unread notifications count
+//         const notificationsResponse = await axios.get('http://127.0.0.1:1234/api/article/user/unread/notifications', {
+//           headers: {
+//             Authorization: `Bearer ${localStorage.getItem('token')}`,
+//           },
+//         });
+//         if (notificationsResponse.status === 200 && notificationsResponse.data.unreadCount !== undefined) {
+//           setUnreadNotifications(notificationsResponse.data.unreadCount);
+//         }
+//       } catch (error) {
+//         setError('Failed to fetch user data');
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchUserData();
+//   }, []);
 
 //   if (loading) {
-//     return <LoadingSpinner />; // Replace with your spinner component
+//     return (
+//       <div className="flex justify-center items-center h-screen bg-black">
+//         <p className="text-white text-xl">Loading...</p>
+//       </div>
+//     );
 //   }
 
 //   if (error) {
-//     return <ErrorMessage message={error} />; // Replace with your error message component
-//   }
-
-//   if (!article) {
 //     return (
 //       <div className="flex justify-center items-center h-screen bg-black">
-//         <p className="text-white text-xl">No article found.</p>
+//         <p className="text-red-500 text-xl">{error}</p>
 //       </div>
 //     );
 //   }
 
 //   return (
-//     <div className="flex flex-col min-h-screen bg-black text-white">
-//       <Navbar />
-//       <div className="flex flex-col md:flex-row flex-1 mx-auto p-8 space-y-8 md:space-y-0 md:space-x-8">
-//         <div className="flex-1">
-//           <div className="flex space-x-4 mb-4">
-//             <button
-//               onClick={handleBookmark}
-//               disabled={isBookmarked || actionLoading.bookmark}
-//               className={`flex items-center px-4 py-2 rounded-full ${isBookmarked ? 'bg-gray-600' : 'bg-blue-600 hover:bg-blue-500'} text-white transition duration-150`}
-//             >
-//               {actionLoading.bookmark ? <LoadingSpinner /> : 'Bookmark'}
-//             </button>
-//             <button
-//               onClick={handleAddToLibrary}
-//               disabled={isInLibrary || actionLoading.library}
-//               className={`flex items-center px-4 py-2 rounded-full ${isInLibrary ? 'bg-gray-600' : 'bg-green-600 hover:bg-green-500'} text-white transition duration-150`}
-//             >
-//               {actionLoading.library ? <LoadingSpinner /> : 'Add to Library'}
-//             </button>
-//           </div>
-//           <h1 className="text-3xl font-bold mb-4">{article.title}</h1>
-//           <p className="text-gray-400 mb-6">{article.description}</p>
-//           <div className="text-white" dangerouslySetInnerHTML={{ __html: article.content }}></div>
-//         </div>
-
-//         <div className="w-full md:w-1/3 bg-gray-800 p-4 rounded-md">
-//           <h2 className="text-2xl font-semibold mb-4">Author: {author?.name}</h2>
-//           {author && (
-//             <button
-//               onClick={isFollowing ? unfollowAuthor : followAuthor}
-//               className={`px-4 py-2 rounded-full ${isFollowing ? 'bg-red-600 hover:bg-red-500' : 'bg-blue-600 hover:bg-blue-500'} text-white transition duration-150`}
-//               disabled={actionLoading.follow}
-//             >
-//               {actionLoading.follow ? <LoadingSpinner /> : isFollowing ? 'Unfollow' : 'Follow'}
-//             </button>
-//           )}
-//         </div>
+//     <nav className="bg-black text-white p-2 flex items-center justify-between lg:pt-0 pl-1 sm:p-4 md:p-5 lg:p-2 w-full">
+//       {/* Logo */}
+//       <div className="flex items-center lg:pl-2 ">
+//         <Link to="/" className="text-2xl font-bold h-10 w-10 ">
+//           <img src="/letterform.png" alt="Logo" />
+//         </Link>
 //       </div>
 
-//       {relatedArticles.length > 0 && (
-//         <div className="bg-gray-900 p-4">
-//           <h2 className="text-xl font-semibold mb-4">Related Articles</h2>
-//           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-//             {relatedArticles.map((relatedArticle) => (
-//               <Link key={relatedArticle._id} to={`/article/${relatedArticle._id}`} className="block p-4 bg-gray-800 rounded-md">
-//                 <h3 className="text-lg font-bold mb-2">{relatedArticle.title}</h3>
-//                 <p className="text-gray-400">{relatedArticle.description}</p>
-//               </Link>
-//             ))}
-//           </div>
-//         </div>
-//       )}
-//     </div>
-//   );
- };
+//       {/* Search Bar */}
+//       <div className="flex-grow mx-4 lg:pl-5">
+//         <input
+//           type="text"
+//           placeholder="Search..."
+//           className="w-full lg:w-60 p-2 rounded-2xl bg-gray-900 text-white focus:outline-none focus:ring-1 focus:ring-white transition-all duration-500 ease-in-out lg:focus:w-full"
+//           onChange={(e) => onSearch(e.target.value)}
+//         />
+//       </div>
 
-export default ArticleView;
+//       {/* Hamburger Icon for Mobile View */}
+//       <div className="lg:hidden">
+//         <button
+//           onClick={() => setIsNavOpen(!isNavOpen)}
+//           className="text-white focus:outline-none"
+//         >
+//           <img
+//             src={user?.profilePic || '/default-profile.png'}
+//             alt="Profile"
+//             className="w-8 h-8 rounded-full"
+//           />
+//         </button>
+//       </div>
+
+//       {/* Links - Dropdown on Mobile */}
+//       <div
+//         className={`lg:flex items-center lg:space-x-4 ${
+//           isNavOpen ? 'block' : 'hidden'
+//         } lg:block absolute lg:static bg-black lg:bg-transparent w-full lg:w-auto top-16 left-0 lg:top-auto lg:left-auto z-50 lg:z-auto`}
+//       >
+//         {user ? (
+//           <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 px-4 lg:px-0 py-4 lg:py-0">
+//             <Link to="/profile" className="hover:text-gray-400 flex items-center py-2 lg:hidden">
+//               <img
+//                 src={user?.profilePic || '/default-profile.png'}
+//                 alt="Profile"
+//                 className="w-8 h-8 rounded-full"
+//               />
+//               <p className="ml-2">My Profile</p>
+//             </Link>
+
+//             <Link to="/create" className="hover:text-gray-400 flex items-center py-2 lg:pl-6 lg:pr-6">
+//               <svg
+//                 xmlns="http://www.w3.org/2000/svg"
+//                 fill="none"
+//                 viewBox="0 0 24 24"
+//                 stroke="currentColor"
+//                 className="w-8 h-8"
+//               >
+//                 <path
+//                   strokeLinecap="round"
+//                   strokeLinejoin="round"
+//                   strokeWidth={1}
+//                   d="M16 5l3 3m0 0l-3 3m3-3H4v8h12V8zM4 6a1 1 0 0 0-1 1v13a1 1 0 0 0 1 1h13a1 1 0 0 0 1-1V8a1 1 0 0 0-1-1H6l-2 2z"
+//                 />
+//               </svg>
+//               <p className="ml-2">Write</p>
+//             </Link>
+
+//             <Link to="/notifications" className="hover:text-gray-400 flex items-center py-2 lg:pr-6 lg:pl-3 relative">
+//               <svg
+//                 xmlns="http://www.w3.org/2000/svg"
+//                 fill="none"
+//                 viewBox="0 0 24 24"
+//                 stroke="currentColor"
+//                 className="w-10 h-10"
+//               >
+//                 <path
+//                   strokeLinecap="round"
+//                   strokeLinejoin="round"
+//                   strokeWidth={1}
+//                   d="M14 5v2a3 3 0 0 1 3 3v4a3 3 0 0 1-3 3h-4a3 3 0 0 1-3-3V10a3 3 0 0 1 3-3V5m4 0a1 1 0 0 1 1 1v2h-2V6a1 1 0 0 1 1-1zm-2 11v1a2 2 0 1 1-4 0v-1m2 0a2 2 0 0 1-2-2h4a2 2 0 0 1-2 2z"
+//                 />
+//               </svg>
+//               {unreadNotifications > 0 && (
+//                 <span className="absolute bg-red-600 text-white text-xs font-bold rounded-full px-2">
+//                   {unreadNotifications}
+//                 </span>
+//               )}
+//             </Link>
+//             <div className="hidden lg:block h-10 w-10">
+//           <Link to="/profile" className="py-2">
+//             <img
+//               src={user?.profilePic || '/default-profile.png'}
+//               alt="Profile"
+//               className="w-10 h-10 rounded-full"
+//             />
+//           </Link>
+//         </div>
+//           </div>
+          
+//         ) : (
+//           <div className="flex flex-col lg:flex-row lg:items-center lg:space-x-4 px-4 lg:px-0 py-4 lg:py-0">
+//             <Link to="/login" className="hover:text-gray-400 py-2">
+//               Login
+//             </Link>
+//             <Link to="/signup" className="hover:text-gray-400 py-2">
+//               Signup
+//             </Link>
+//           </div>
+//         )}
+//       </div>
+//     </nav>
+//   );
+// };
+
+// export default Navbar;

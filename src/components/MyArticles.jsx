@@ -23,7 +23,7 @@ const MyArticles = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get('http://127.0.0.1:1234/api/article/user/myArticles', {
+        const response = await axios.get('https://article-back.onrender.com/api/article/user/myArticles', {
           headers: {
             Authorization: `Bearer ${localStorage.getItem('token')}`,
           },

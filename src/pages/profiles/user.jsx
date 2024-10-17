@@ -61,7 +61,7 @@ const ProfilePage = () => {
   const navigate = useNavigate();
   const fileInputRef = useRef(null);
 
-  const API_BASE_URL = 'http://127.0.0.1:1234/api/article/user';
+  const API_BASE_URL = 'https://article-back.onrender.com/api/article/user';
 
   const handleLinkClick = (page) => {
     setActivePage(page);

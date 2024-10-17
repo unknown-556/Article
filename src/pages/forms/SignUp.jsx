@@ -18,7 +18,7 @@ const Signup = () => {
 
   const checkUsernameAvailability = async (username) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:1234/api/article/auth/usernames`);
+      const response = await axios.get(`https://article-back.onrender.com/api/article/auth/usernames`);
       const usernames = response.data.usernames;
       return !usernames.includes(username); // return true if username is available
     } catch (error) {
