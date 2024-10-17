@@ -95,7 +95,7 @@ const Signup = () => {
     };
 
     try {
-      const res = await axios.post('http://127.0.0.1:1234/api/article/auth/register', formattedData);
+      const res = await axios.post('https://article-back.onrender.com/api/article/auth/register', formattedData);
       localStorage.setItem('token', res.data.token);
       setPopupMessage('Signup successful! Redirecting to login...'); // Set popup message
       setShowPopup(true); // Show the popup
