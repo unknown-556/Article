@@ -541,7 +541,7 @@ const ArticleView = () => {
           <div className="space-y-4">
             {relatedArticles.map((relatedArticle) => (
               <Link 
-                to={`/article/${relatedArticle._id}`} 
+                to={`/articles/${relatedArticle._id}`} 
                 key={relatedArticle._id} 
                 className="block p-4 bg-gray-800 rounded-lg hover:bg-gray-700 transition duration-150 border-b border-gray-800"
               >
