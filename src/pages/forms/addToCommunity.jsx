@@ -1,18 +1,20 @@
 import React, { useState, useRef, useEffect } from 'react';
-// import { Link, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import 'froala-editor/css/froala_editor.pkgd.min.css';
 import FroalaEditorComponent from 'react-froala-wysiwyg';
 import '../../index.css';
 
-const AddArticle = () => {
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    content: '',
-    image: '',
-    categories: []
-  });
+const AddArticletoCommunity = () => {
+    const { communityId } = useParams();  
+    const [formData, setFormData] = useState({
+      communityId: communityId || '',  
+      title: '',
+      description: '',
+      content: '',
+      image: '',
+      categories: [],
+    });
 
   const [previewMode, setPreviewMode] = useState(false); 
   const [imagePreview, setImagePreview] = useState(null);
@@ -21,6 +23,7 @@ const AddArticle = () => {
   const [showCategories, setShowCategories] = useState(false); 
   const [loading, setLoading] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const navigate = useNavigate();
 
   const categories = [
     'Technology', 'Health', 'Business', 'Science', 'Programming', 'Coding', 'Psychology', 'Marketing', 'Lifestyle', 'Books',
@@ -92,6 +95,7 @@ const AddArticle = () => {
     setLoading(true);
 
     const data = new FormData();
+    data.append('communityId', formData.communityId);
     data.append('title', formData.title);
     data.append('description', formData.description);
     data.append('content', formData.content);
@@ -103,7 +107,7 @@ const AddArticle = () => {
     console.log(formData)
 
     try {
-      await axios.post('https://article-back.onrender.com/api/article/post/create', data, {
+      await axios.post('http://127.0.0.1:1234/api/article/community/add', data, {
         headers: {
           'Content-Type': 'multipart/form-data',
           Authorization: `Bearer ${localStorage.getItem('token')}`,
@@ -163,7 +167,7 @@ const AddArticle = () => {
       )}  
       {formPart === 0 && (
         <form onSubmit={handleSubmit} className="bg-black p-8 rounded-lg shadow-md w-full max-w-md md:max-w-2xl lg:max-w-3xl">
-          <h2 className="text-2xl text-white mb-6 text-center">Add New Article</h2>
+          <h2 className="text-2xl text-white mb-6 text-center">Add Article to Community</h2>
           <input
             type="text"
             name="title"
@@ -299,7 +303,7 @@ const AddArticle = () => {
               Preview
             </button>
               <button type="submit" onClick={handleSubmit} className="w-2/5 bg-black hover:bg-white hover:text-black p-3 hover:rounded-xl text-white">
-                Submit
+                Submit To Community
               </button>
             </div>
           </div>
@@ -356,4 +360,4 @@ const AddArticle = () => {
   );
 };
 
-export default AddArticle;
+export default AddArticletoCommunity;
