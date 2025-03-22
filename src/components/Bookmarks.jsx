@@ -38,7 +38,7 @@ const Bookmarks = ({ onArticleClick }) => {
   }, []);
 
   const handleArticleClick = (articles) => {
-    navigate(`/articles/${articles._id}`);
+    navigate(`/articles/${articles.slug}`);
   };
 
   useEffect(() => {

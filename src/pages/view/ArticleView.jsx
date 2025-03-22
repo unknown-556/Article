@@ -4,7 +4,7 @@ import axios from 'axios';
 import Navbar from '../../components/NavBar';
 
 const ArticleView = () => {
-  const { id } = useParams();
+  const { slug } = useParams();
   const navigate = useNavigate();
   const [article, setArticle] = useState(null);
   const [relatedArticles, setRelatedArticles] = useState([]);
@@ -61,7 +61,7 @@ const ArticleView = () => {
   // Add a new comment
   const addComment = async () => {
     try {
-      await axios.post(`https://article-back.onrender.com/api/article/post/comment/${id}`, 
+      await axios.post(`https://article-back.onrender.com/api/article/post/comment/${slug}`, 
         { text: commentText }, 
         {
           headers: {
@@ -141,7 +141,7 @@ const ArticleView = () => {
   // Fetch the main article
   const fetchArticle = async () => {
     try {
-      const response = await axios.get(`https://article-back.onrender.com/api/article/post/single/${id}`, {
+      const response = await axios.get(`http://127.0.0.1:1234/api/article/post/single/${slug}`, {
         headers: {
           Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
@@ -161,7 +161,7 @@ const ArticleView = () => {
   const getAuthor = async (authorId) => {
     try {
       if (authorId) {
-        const response = await axios.get(`https://article-back.onrender.com/api/article/user/author/${authorId}`);
+        const response = await axios.get(`http://127.0.0.1:1234/api/article/user/author/${authorId}`);
         setAuthor(response.data.user);
         checkUserFollowing(response.data.user._id); 
       }
@@ -212,7 +212,7 @@ const ArticleView = () => {
       const categories = article?.categories;
       if (categories && categories.length > 0) {
         const categoriesParam = categories.join(','); // Assuming API expects comma-separated categories
-        const response = await axios.get(`https://article-back.onrender.com/api/article/post/related/${categoriesParam}`);
+        const response = await axios.get(`http://127.0.0.1:1234/api/article/post/related/${categoriesParam}`);
         setRelatedArticles(response.data.posts);
       }
     } catch (error) {
@@ -296,7 +296,7 @@ const ArticleView = () => {
   useEffect(() => {
     fetchArticle(); // Fetch the article when component mounts
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [id]);
+  }, [slug]);
 
   // Fetch author details and related articles when article is loaded
   useEffect(() => {
@@ -391,7 +391,7 @@ const ArticleView = () => {
                 />
               </Link>
               <div>
-                <Link to={`/author/${author._id}`}>
+                <Link to={`/author/${author.slug}`}>
                   <p className="text-lg font-semibold text-blue-400 hover:underline">
                     {`${author.firstName} ${author.lastName}`}
                   </p>

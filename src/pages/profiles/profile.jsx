@@ -20,7 +20,7 @@ const Popup = ({ message, onClose }) => {
 };
 
 const UserProfilePage = () => {
-  const { userId } = useParams(); 
+  const { slug } = useParams(); 
   const navigate = useNavigate(); 
   const [user, setUser] = useState(null);
   const [articles, setArticles] = useState([]);
@@ -35,40 +35,53 @@ const UserProfilePage = () => {
   const [showPopup, setShowPopup] = useState(false);
 
   // Fetch user data and articles
-  useEffect(() => {
-    const fetchUserData = async () => {
-      setLoading(true); 
-      try {
-        // Fetch the profile user data
-        const userResponse = await axios.get(`https://article-back.onrender.com/api/article/user/user/${userId}`);
-        const userData = userResponse.data.user;
-        setUser(userData);
+  // Fetch user data and articles
+useEffect(() => {
+  const fetchUserData = async () => {
+    setLoading(true);
+    try {
+      // Fetch profile user data and articles in parallel
+      const [userResponse, articlesResponse] = await Promise.all([
+        axios.get(`http://127.0.0.1:1234/api/article/user/userSlug/${slug}`),
+        axios.get(`http://127.0.0.1:1234/api/article/post/article/${slug}`)
+      ]);
 
-        // Fetch current logged-in user profile to check following status
-        const currentUserResponse = await axios.get(`https://article-back.onrender.com/api/article/user/profile`, {
-          headers: {
-            Authorization: `Bearer ${localStorage?.getItem('token')}`,
-          },
-        });
-        const currentUser = currentUserResponse.data.user;
-        setIsFollowing(currentUser.following.includes(userData._id)); 
+      // Process user data
+      const userData = userResponse.data.user;
+      setUser(userData);
 
-        const articlesResponse = await axios.get(`https://article-back.onrender.com/api/article/post/article/${userId}`);
-        const articlesData = articlesResponse.data.posts || [];
-        console.log(articlesData);
-        setArticles(articlesData);
-        setFilteredArticles(articlesData);
-      } catch (error) {
-        console.error(error);
-        setError(error.response?.data?.message || 'Failed to fetch user or articles data');
-      } finally {
-        setLoading(false);
+      // Process articles
+      const articlesData = articlesResponse.data.posts || [];
+      setArticles(articlesData);
+      setFilteredArticles(articlesData);
+
+      // Check following status only if logged in
+      const token = localStorage?.getItem('token');
+      if (token) {
+        try {
+          const currentUserResponse = await axios.get(
+            `https://article-back.onrender.com/api/article/user/profile`,
+            { headers: { Authorization: `Bearer ${token}` } }
+          );
+          const currentUser = currentUserResponse.data.user;
+          setIsFollowing(currentUser.following.includes(userData._id));
+        } catch (error) {
+          console.error('Error fetching current user:', error);
+          setIsFollowing(false); // Reset if there's an error with the token
+        }
+      } else {
+        setIsFollowing(false); // Not logged in
       }
-    };
+    } catch (error) {
+      console.error(error);
+      setError(error.response?.data?.message || 'Failed to fetch user or articles data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    fetchUserData();
-  }, [userId]);
-
+  fetchUserData();
+}, [slug]);
   const Popup = ({ message, onClose }) => {
     return (
       <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-70 backdrop-blur-sm">
@@ -87,7 +100,7 @@ const UserProfilePage = () => {
 
   // Handle article click to navigate to ArticleView
   const handleArticleClick = (article) => {
-    navigate(`/articles/${article._id}`); 
+    navigate(`/articles/${article.slug}`); 
   };
 
   // Debounced filtering of articles based on search query
@@ -102,7 +115,7 @@ const UserProfilePage = () => {
       } else {
         setFilteredArticles([]); 
       }
-    }, 300); // 300ms debounce time
+    }, 300); 
 
     return () => clearTimeout(debounceTimeout);
   }, [searchQuery, articles]);
@@ -115,32 +128,45 @@ const UserProfilePage = () => {
     setIsProfileVisible(!isProfileVisible);
   };
 
-  // Handle following the author with optimistic UI update
   const followAuthor = async () => {
+    const token = localStorage?.getItem('token');
+
+    if (!token) {
+      setPopupMessage('Please log in to follow the author.');
+      setShowPopup(true);
+      return;
+    }
+  
     setFollowLoading(true);
-    setIsFollowing(true); // Optimistically update the UI
+    setIsFollowing(true); 
+  
     try {
-      await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${user._id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${localStorage?.getItem('token')}`,
-        },
-      });
+      await axios.post(
+        `http://127.0.0.1:1234/api/article/user/follow/${user._id}`,
+        {},
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
       setPopupMessage('Successfully followed the author!');
       setShowPopup(true);
     } catch (error) {
       console.error('Error following:', error);
-      setIsFollowing(false); 
+      setIsFollowing(false);
       setPopupMessage('Failed to follow the author.');
       setShowPopup(true);
     } finally {
       setFollowLoading(false);
     }
   };
+  
 
   // Handle unfollowing the author with optimistic UI update
   const unfollowAuthor = async () => {
     setFollowLoading(true);
-    setIsFollowing(false); // Optimistically update the UI
+    setIsFollowing(false); 
     try {
       await axios.post(`http://127.0.0.1:1234/api/article/user/follow/${user._id}`, {}, {
         headers: {

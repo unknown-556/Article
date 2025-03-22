@@ -37,7 +37,7 @@ const Home = () => {
   }, []);
 
   const handleArticleClick = (article) => {
-    navigate(`/articles/${article._id}`);
+    navigate(`/articles/${article.slug}`);
   };
 
   const handleCategoryChange = (category) => {

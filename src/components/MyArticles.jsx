@@ -17,7 +17,7 @@ const MyArticles = () => {
   };
 
   const handleArticleClick = (article) => {
-    navigate(`/articles/${article._id}`);
+    navigate(`/articles/${article.slug}`);
   };
 
   useEffect(() => {

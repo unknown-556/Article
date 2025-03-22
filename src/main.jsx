@@ -24,8 +24,8 @@ ReactDOM.createRoot(document.getElementById('root')).render(
         <Route path = '/create' element={< AddArticle/>} />
         <Route path="/add-article/:communityId" element={<AddArticletoCommunity/>} />
         <Route path = '/profile' element={<ProfilePage/>} />
-        <Route path = "/author/:userId" element={<UserProfilePage />} />
-        <Route path="/articles/:id" element={<ArticleView />} />
+        <Route path = "/author/:slug" element={<UserProfilePage />} />
+        <Route path="/articles/:slug" element={<ArticleView />} />
         <Route path="/community" element={<CommunityPage />} />
         <Route path = '/notifications' element={< Notifications/>} />
         <Route path = '/Home' element={< Home/>} />
